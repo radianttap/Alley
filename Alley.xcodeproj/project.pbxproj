@@ -30,7 +30,7 @@
 		D05AF74E239D2A0200F88E45 = {
 			isa = PBXGroup;
 			children = (
-				D05AF75A239D2A0200F88E45 /* Alley */,
+				D05AF75A239D2A0200F88E45 /* Framework */,
 				D05AF759239D2A0200F88E45 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,13 +43,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D05AF75A239D2A0200F88E45 /* Alley */ = {
+		D05AF75A239D2A0200F88E45 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
 				D05AF75B239D2A0200F88E45 /* Alley.h */,
 				D05AF75C239D2A0200F88E45 /* Info.plist */,
 			);
-			path = Alley;
+			path = Framework;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
