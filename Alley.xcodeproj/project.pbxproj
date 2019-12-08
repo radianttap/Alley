@@ -8,12 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		D05AF75D239D2A0200F88E45 /* Alley.h in Headers */ = {isa = PBXBuildFile; fileRef = D05AF75B239D2A0200F88E45 /* Alley.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D05AF765239D5FA300F88E45 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF764239D5FA300F88E45 /* NetworkError.swift */; };
+		D05AF767239D614900F88E45 /* NetworkError-Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF766239D614900F88E45 /* NetworkError-Localized.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D05AF758239D2A0200F88E45 /* Alley.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alley.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D05AF75B239D2A0200F88E45 /* Alley.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Alley.h; sourceTree = "<group>"; };
 		D05AF75C239D2A0200F88E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D05AF764239D5FA300F88E45 /* NetworkError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		D05AF766239D614900F88E45 /* NetworkError-Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError-Localized.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,6 +34,7 @@
 		D05AF74E239D2A0200F88E45 = {
 			isa = PBXGroup;
 			children = (
+				D05AF763239D5FA300F88E45 /* Alley */,
 				D05AF75A239D2A0200F88E45 /* Framework */,
 				D05AF759239D2A0200F88E45 /* Products */,
 			);
@@ -50,6 +55,15 @@
 				D05AF75C239D2A0200F88E45 /* Info.plist */,
 			);
 			path = Framework;
+			sourceTree = "<group>";
+		};
+		D05AF763239D5FA300F88E45 /* Alley */ = {
+			isa = PBXGroup;
+			children = (
+				D05AF764239D5FA300F88E45 /* NetworkError.swift */,
+				D05AF766239D614900F88E45 /* NetworkError-Localized.swift */,
+			);
+			path = Alley;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,6 +145,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D05AF765239D5FA300F88E45 /* NetworkError.swift in Sources */,
+				D05AF767239D614900F88E45 /* NetworkError-Localized.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
