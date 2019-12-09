@@ -17,13 +17,13 @@ extension NetworkError: LocalizedError {
 		case .urlError(let urlError):
 			return urlError.localizedDescription
 
-		case .invalidResponseType:
+		case .invalidResponseType, .noResponse:
 			return NSLocalizedString("Internal error", comment: "")
 
         case .noResponseData:
             return nil
 
-		case .unavailable:
+		case .inaccessible:
 			return NSLocalizedString("Service is not accessible", comment: "")
 		}
 	}
@@ -36,10 +36,13 @@ extension NetworkError: LocalizedError {
 		case .urlError(let urlError):
 			return (urlError as NSError).localizedFailureReason
 
+		case .noResponse:
+			return NSLocalizedString("Request apparently succeeded (no errors) but URLResponse was not received.", comment: "")
+
 		case .invalidResponseType(let response):
 			return String(format: NSLocalizedString("Response is not HTTP response.\n\n%@", comment: ""), response)
 
-		case .unavailable:
+		case .inaccessible:
 			return nil
 
         case .noResponseData:
