@@ -21,6 +21,10 @@ extension URLSession {
 				 allowEmptyData: Bool = false,
 				 callback: @escaping Callback)
 	{
+		if maxRetries <= 0 {
+			fatalError("maxRetries must be 1 or larger.")
+		}
+
 		let networkRequest = NetworkRequest(urlRequest, 0, maxRetries, allowEmptyData, callback)
 		authenticate(networkRequest)
 	}
