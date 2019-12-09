@@ -16,6 +16,13 @@ extension URLSession {
 	typealias DataResult = Result<Data, NetworkError>
 	typealias Callback = (DataResult) -> Void
 
+	/// Executes given URLRequest instance, possibly retrying the said number of times. Through `callback` returns either `Data` from the response or `NetworkError` instance.
+	/// If any authentication needs to be done, it's handled internally by this methods and its derivatives.
+	/// - Parameters:
+	///   - urlRequest: URLRequest instance to execute.
+	///   - maxRetries: Number of automatic retries (default is 10).
+	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by URLSession. Default is `false`.
+	///   - callback: Closure to return the result of the request's execution.
 	func perform(_ urlRequest: URLRequest,
 				 maxRetries: Int = URLSession.maximumNumberOfRetries,
 				 allowEmptyData: Bool = false,
