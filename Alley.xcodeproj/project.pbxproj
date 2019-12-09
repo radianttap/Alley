@@ -15,6 +15,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D008971B239E64530013481B /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		D008971C239E64530013481B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D05AF758239D2A0200F88E45 /* Alley.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alley.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D05AF75B239D2A0200F88E45 /* Alley.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Alley.h; sourceTree = "<group>"; };
 		D05AF75C239D2A0200F88E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -38,6 +40,8 @@
 		D05AF74E239D2A0200F88E45 = {
 			isa = PBXGroup;
 			children = (
+				D008971B239E64530013481B /* LICENSE */,
+				D008971C239E64530013481B /* README.md */,
 				D05AF763239D5FA300F88E45 /* Alley */,
 				D05AF75A239D2A0200F88E45 /* Framework */,
 				D05AF759239D2A0200F88E45 /* Products */,
