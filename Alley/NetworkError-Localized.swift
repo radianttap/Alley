@@ -23,6 +23,10 @@ extension NetworkError: LocalizedError {
         case .noResponseData:
             return nil
 
+		case .endpointError(let httpURLResponse, _):
+			let s = "\( httpURLResponse.statusCode ) \( HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode) )"
+			return s
+
 		case .inaccessible:
 			return NSLocalizedString("Service is not accessible", comment: "")
 		}
@@ -47,6 +51,26 @@ extension NetworkError: LocalizedError {
 
         case .noResponseData:
             return NSLocalizedString("Request succeeded, no response body received", comment: "")
+
+		case .endpointError(let httpURLResponse, let data):
+			let s = "\( httpURLResponse.formattedHeaders )\n\n\( data?.utf8StringRepresentation ?? "" )"
+			return s
 		}
+	}
+}
+
+private extension HTTPURLResponse {
+	var formattedHeaders: String {
+		return allHeaderFields.map { "\( $0.key ) : \( $0.value )" }.joined(separator: "\n")
+	}
+}
+
+private extension Data {
+	var utf8StringRepresentation: String? {
+		guard
+			let str = String(data: self, encoding: .utf8)
+		else { return nil }
+
+		return str
 	}
 }

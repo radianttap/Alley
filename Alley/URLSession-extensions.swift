@@ -38,7 +38,7 @@ extension URLSession {
 }
 
 private extension URLSession {
-	///	Helper type which models `URLRequest` (input), `Callback` from the callee (output)
+	///	Helper type which groups `URLRequest` (input), `Callback` from the caller (output)
 	///	along with helpful processing properties, like number of retries.
 	typealias NetworkRequest = (
 		urlRequest: URLRequest,
@@ -97,6 +97,10 @@ private extension URLSession {
 			} else {
 				return .failure( NetworkError.noResponse )
 			}
+		}
+
+		if httpURLResponse.statusCode >= 400 {
+			return .failure( NetworkError.endpointError(httpURLResponse, data) )
 		}
 
 		guard let data = data, data.count > 0 else {
