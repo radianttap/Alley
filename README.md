@@ -5,7 +5,7 @@
 
 # Alley
 
-Essential URLSessionDataTask micro-wrapper for communication with HTTP(S) web services. This is built as framework but it’s so small that I encourage you to simply copy the Alley folder into your project directly.
+Essential `URLSessionDataTask` micro-wrapper for communication with HTTP(S) web services. This is built as framework but it’s so small that I encourage you to simply copy the Alley folder into your project directly.
 
 ## Why
 
