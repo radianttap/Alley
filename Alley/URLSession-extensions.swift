@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension URLSession {
+public extension URLSession {
 	///	Default number of retries to attempt on each `URLRequest` instance. To customize, supply desired value to `perform()`
 	static var maximumNumberOfRetries: Int = 10
 

@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension NetworkError {
+public extension NetworkError {
 	///	Returns `true` if URLRequest should be retried for the given `NetworkError` instance.
 	///
 	///	At the lowest network levels, it makes sense to retry for cases of (possible) temporary outage. Things like timeouts, can't connect to host, network connection lost.

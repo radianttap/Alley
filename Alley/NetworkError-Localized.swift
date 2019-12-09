@@ -9,7 +9,7 @@
 import Foundation
 
 extension NetworkError: LocalizedError {
-	var errorDescription: String? {
+	public var errorDescription: String? {
 		switch self {
 		case .generalError(let error):
 			return error.localizedDescription
@@ -32,7 +32,7 @@ extension NetworkError: LocalizedError {
 		}
 	}
 
-	var failureReason: String? {
+	public var failureReason: String? {
 		switch self {
 		case .generalError(let error):
 			return (error as NSError).localizedFailureReason
