@@ -14,7 +14,7 @@ In most cases where you need to fetch something from the internet, you:
 1. Want to get the data at the URL you are targeting, no matter what
 2. In case when it’s simply not possible, display some useful error to the end-customer *and* display / log what error actually happened so you can troubleshoot and debug
 
-Second point is not to have. First one is vastly more important since that data is the reason you are doing this at all.
+Second point is nice to have. First one is vastly more important since that data is the reason you are doing this at all.
 
 Thus main feature of Alley is **automatic request retries** for predefined conditions.
 
@@ -134,6 +134,10 @@ There is currently no delay between retries, it simply tries again.
 
 You can customize the behavior by changing the implementation of `shouldRetry` property. 
 Currently it deals only with `NetworkError.urlError` and returns `true` for several obvious `URLError` instances.
+
+* * *
+
+That’s about it. Alley is intentionally simple to encourage writing as little code as possible, hiding away often-repeated boilerplate.
 
 ## License
 
