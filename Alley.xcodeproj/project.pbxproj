@@ -10,7 +10,7 @@
 		D05AF75D239D2A0200F88E45 /* Alley.h in Headers */ = {isa = PBXBuildFile; fileRef = D05AF75B239D2A0200F88E45 /* Alley.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D05AF765239D5FA300F88E45 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF764239D5FA300F88E45 /* NetworkError.swift */; };
 		D05AF767239D614900F88E45 /* NetworkError-Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF766239D614900F88E45 /* NetworkError-Localized.swift */; };
-		D05AF769239D636700F88E45 /* URLSession-extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF768239D636700F88E45 /* URLSession-extensions.swift */; };
+		D05AF769239D636700F88E45 /* URLSession-Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF768239D636700F88E45 /* URLSession-Extensions.swift */; };
 		D05AF76B239E352200F88E45 /* NetworkError-Retries.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05AF76A239E352200F88E45 /* NetworkError-Retries.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,7 +20,7 @@
 		D05AF75C239D2A0200F88E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D05AF764239D5FA300F88E45 /* NetworkError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		D05AF766239D614900F88E45 /* NetworkError-Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError-Localized.swift"; sourceTree = "<group>"; };
-		D05AF768239D636700F88E45 /* URLSession-extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession-extensions.swift"; sourceTree = "<group>"; };
+		D05AF768239D636700F88E45 /* URLSession-Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession-Extensions.swift"; sourceTree = "<group>"; };
 		D05AF76A239E352200F88E45 /* NetworkError-Retries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError-Retries.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -67,7 +67,7 @@
 				D05AF764239D5FA300F88E45 /* NetworkError.swift */,
 				D05AF76A239E352200F88E45 /* NetworkError-Retries.swift */,
 				D05AF766239D614900F88E45 /* NetworkError-Localized.swift */,
-				D05AF768239D636700F88E45 /* URLSession-extensions.swift */,
+				D05AF768239D636700F88E45 /* URLSession-Extensions.swift */,
 			);
 			path = Alley;
 			sourceTree = "<group>";
@@ -152,7 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D05AF76B239E352200F88E45 /* NetworkError-Retries.swift in Sources */,
-				D05AF769239D636700F88E45 /* URLSession-extensions.swift in Sources */,
+				D05AF769239D636700F88E45 /* URLSession-Extensions.swift in Sources */,
 				D05AF765239D5FA300F88E45 /* NetworkError.swift in Sources */,
 				D05AF767239D614900F88E45 /* NetworkError-Localized.swift in Sources */,
 			);
