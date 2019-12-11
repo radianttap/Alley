@@ -13,7 +13,34 @@
 		D01D86E723A185FB008B78A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D01D86E623A185FB008B78A6 /* Assets.xcassets */; };
 		D01D86EA23A185FB008B78A6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D01D86E923A185FB008B78A6 /* Preview Assets.xcassets */; };
 		D01D86ED23A185FB008B78A6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D01D86EB23A185FB008B78A6 /* LaunchScreen.storyboard */; };
+		D01D86FB23A18663008B78A6 /* Alley.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01D86F923A18653008B78A6 /* Alley.framework */; };
+		D01D86FC23A18663008B78A6 /* Alley.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D01D86F923A18653008B78A6 /* Alley.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D01D86FF23A186B1008B78A6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01D86FE23A186B1008B78A6 /* DataManager.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D01D86F823A18653008B78A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D01D86F423A18653008B78A6 /* Alley.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D05AF758239D2A0200F88E45;
+			remoteInfo = Alley;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D01D86FD23A18663008B78A6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D01D86FC23A18663008B78A6 /* Alley.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D01D86DD23A185F9008B78A6 /* AlleyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlleyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -24,6 +51,8 @@
 		D01D86E923A185FB008B78A6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D01D86EC23A185FB008B78A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D01D86EE23A185FB008B78A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D01D86F423A18653008B78A6 /* Alley.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alley.xcodeproj; path = ../Alley.xcodeproj; sourceTree = "<group>"; };
+		D01D86FE23A186B1008B78A6 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D01D86FB23A18663008B78A6 /* Alley.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,8 +70,10 @@
 		D01D86D423A185F9008B78A6 = {
 			isa = PBXGroup;
 			children = (
+				D01D86F423A18653008B78A6 /* Alley.xcodeproj */,
 				D01D86DF23A185F9008B78A6 /* AlleyDemo */,
 				D01D86DE23A185F9008B78A6 /* Products */,
+				D01D86FA23A18663008B78A6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,6 +95,7 @@
 				D01D86EB23A185FB008B78A6 /* LaunchScreen.storyboard */,
 				D01D86EE23A185FB008B78A6 /* Info.plist */,
 				D01D86E823A185FB008B78A6 /* Preview Content */,
+				D01D86FE23A186B1008B78A6 /* DataManager.swift */,
 			);
 			path = AlleyDemo;
 			sourceTree = "<group>";
@@ -75,6 +108,21 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		D01D86F523A18653008B78A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D01D86F923A18653008B78A6 /* Alley.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D01D86FA23A18663008B78A6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -85,6 +133,7 @@
 				D01D86D923A185F9008B78A6 /* Sources */,
 				D01D86DA23A185F9008B78A6 /* Frameworks */,
 				D01D86DB23A185F9008B78A6 /* Resources */,
+				D01D86FD23A18663008B78A6 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -121,12 +170,28 @@
 			mainGroup = D01D86D423A185F9008B78A6;
 			productRefGroup = D01D86DE23A185F9008B78A6 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = D01D86F523A18653008B78A6 /* Products */;
+					ProjectRef = D01D86F423A18653008B78A6 /* Alley.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				D01D86DC23A185F9008B78A6 /* AlleyDemo */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		D01D86F923A18653008B78A6 /* Alley.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alley.framework;
+			remoteRef = D01D86F823A18653008B78A6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D01D86DB23A185F9008B78A6 /* Resources */ = {
@@ -147,6 +212,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D01D86E123A185F9008B78A6 /* AppDelegate.swift in Sources */,
+				D01D86FF23A186B1008B78A6 /* DataManager.swift in Sources */,
 				D01D86E323A185F9008B78A6 /* SceneDelegate.swift in Sources */,
 				D01D86E523A185F9008B78A6 /* ContentView.swift in Sources */,
 			);
