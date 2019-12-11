@@ -32,7 +32,17 @@ extension DataManager {
 				case .failure(let networkError):
 					print(networkError)
 				}
+
+				self.schedule()
 			}
+		}
+	}
+
+	func schedule() {
+		DispatchQueue.global().asyncAfter(deadline: .now() + 3) {
+			[unowned self] in
+
+			self.fetch()
 		}
 	}
 }
