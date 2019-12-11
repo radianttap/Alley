@@ -9,13 +9,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        Text("Hello, World!")
-    }
-}
+	@ObservedObject var dataManager: DataManager
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    var body: some View {
+		List {
+			ForEach(dataManager.zens, id: \.self) {
+				z in
+				Text(z)
+			}
+		}
     }
 }
