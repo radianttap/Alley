@@ -15,6 +15,28 @@ final class DataManager: ObservableObject {
 	private lazy var urlSession: URLSession = prepareSession()
 }
 
+extension DataManager {
+	func fetch() {
+		let urlRequest = URLRequest(url: URL(string: "https://api.github.com/zen")!)
+
+		urlSession.perform(urlRequest, maxRetries: 3) {
+			[unowned self] dataResult in
+
+			DispatchQueue.main.async {
+				switch dataResult {
+				case .success(let data):
+					if let s = data.utf8StringRepresentation {
+						self.zens.append(s)
+					}
+
+				case .failure(let networkError):
+					print(networkError)
+				}
+			}
+		}
+	}
+}
+
 
 private extension DataManager {
 	func prepareSession() -> URLSession {
@@ -30,24 +52,6 @@ private extension DataManager {
 		return URLSession(configuration: urlSessionConfiguration,
 						  delegate: nil,
 						  delegateQueue: nil)
-	}
-
-	func fetch() {
-		let urlRequest = URLRequest(url: URL(string: "https://api.github.com/zen")!)
-
-		urlSession.perform(urlRequest, maxRetries: 3) {
-			[unowned self] dataResult in
-
-			switch dataResult {
-			case .success(let data):
-				if let s = data.utf8StringRepresentation {
-					self.zens.append(s)
-				}
-
-			case .failure(let networkError):
-				print(networkError)
-			}
-		}
 	}
 }
 
