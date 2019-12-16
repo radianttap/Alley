@@ -103,7 +103,7 @@ private extension URLSession {
 			return .failure( NetworkError.endpointError(httpURLResponse, data) )
 		}
 
-		guard let data = data, data.count > 0 else {
+        guard let data = data, !data.isEmpty else {
 			if allowEmptyData {
 				return .success(Data())
 			}
