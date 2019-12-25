@@ -14,6 +14,8 @@
 		D01D86EA23A185FB008B78A6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D01D86E923A185FB008B78A6 /* Preview Assets.xcassets */; };
 		D01D86ED23A185FB008B78A6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D01D86EB23A185FB008B78A6 /* LaunchScreen.storyboard */; };
 		D01D86FF23A186B1008B78A6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01D86FE23A186B1008B78A6 /* DataManager.swift */; };
+		D08994CE23B3799300B6B4E7 /* Alley.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D08994CD23B3799300B6B4E7 /* Alley.framework */; };
+		D08994CF23B3799300B6B4E7 /* Alley.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D08994CD23B3799300B6B4E7 /* Alley.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,6 +25,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				D08994CF23B3799300B6B4E7 /* Alley.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -30,7 +33,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D01D86DD23A185F9008B78A6 /* AlleyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlleyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D01D86DD23A185F9008B78A6 /* Alley (Carthage).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Alley (Carthage).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D01D86E023A185F9008B78A6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D01D86E223A185F9008B78A6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D01D86E423A185F9008B78A6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -39,6 +42,7 @@
 		D01D86EC23A185FB008B78A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D01D86EE23A185FB008B78A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D01D86FE23A186B1008B78A6 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		D08994CD23B3799300B6B4E7 /* Alley.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alley.framework; path = Carthage/Build/iOS/Alley.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D08994CE23B3799300B6B4E7 /* Alley.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,7 +69,7 @@
 		D01D86DE23A185F9008B78A6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D01D86DD23A185F9008B78A6 /* AlleyDemo.app */,
+				D01D86DD23A185F9008B78A6 /* Alley (Carthage).app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +100,7 @@
 		D01D86FA23A18663008B78A6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D08994CD23B3799300B6B4E7 /* Alley.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -117,7 +123,7 @@
 			);
 			name = AlleyDemo;
 			productName = AlleyDemo;
-			productReference = D01D86DD23A185F9008B78A6 /* AlleyDemo.app */;
+			productReference = D01D86DD23A185F9008B78A6 /* Alley (Carthage).app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -313,13 +319,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"AlleyDemo/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = AlleyDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.radianttap.AlleyDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.radianttap.AlleyCarthageDemo;
+				PRODUCT_NAME = "Alley (Carthage)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -332,13 +342,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"AlleyDemo/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = AlleyDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.radianttap.AlleyDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.radianttap.AlleyCarthageDemo;
+				PRODUCT_NAME = "Alley (Carthage)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
