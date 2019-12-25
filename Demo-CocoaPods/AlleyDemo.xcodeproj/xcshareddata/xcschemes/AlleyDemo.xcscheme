@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D01D86DC23A185F9008B78A6"
-               BuildableName = "AlleyDemo.app"
+               BuildableName = "Alley (CocoaPods).app"
                BlueprintName = "AlleyDemo"
                ReferencedContainer = "container:AlleyDemo.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D01D86DC23A185F9008B78A6"
-            BuildableName = "AlleyDemo.app"
+            BuildableName = "Alley (CocoaPods).app"
             BlueprintName = "AlleyDemo"
             ReferencedContainer = "container:AlleyDemo.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D01D86DC23A185F9008B78A6"
-            BuildableName = "AlleyDemo.app"
+            BuildableName = "Alley (CocoaPods).app"
             BlueprintName = "AlleyDemo"
             ReferencedContainer = "container:AlleyDemo.xcodeproj">
          </BuildableReference>
