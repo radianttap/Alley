@@ -1,0 +1,16 @@
+PODS:
+  - Alley (0.9)
+
+DEPENDENCIES:
+  - Alley (from `../`)
+
+EXTERNAL SOURCES:
+  Alley:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Alley: 87c4a3e5533a121878ef86c81451bd38334e51f0
+
+PODFILE CHECKSUM: 59d33b33594afea0ea89dca59b566c6f324d2a5e
+
+COCOAPODS: 1.8.4
