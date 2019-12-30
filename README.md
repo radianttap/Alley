@@ -115,7 +115,7 @@ There’s one more possible `NetworkError` value, which is related to...
 
 ## Automatic retries
 
-First of all, there’s a property in `URLSession` called `maximumNumberOfRetries` and its value is `10`. Adjust it as you need.
+Default number of retries is `10`.
 
 This value is automatically used for all `perform()` calls but you can adjust it per call by simply supplying appropriate number to `maxRetries` argument:
 
