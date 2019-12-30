@@ -9,9 +9,6 @@
 import Foundation
 
 public extension URLSession {
-	///	Default number of retries to attempt on each `URLRequest` instance. To customize, supply desired value to `perform()`
-	static var maximumNumberOfRetries: Int = 10
-
 	///	Output types
 	typealias DataResult = Result<Data, NetworkError>
 	typealias Callback = (DataResult) -> Void
@@ -24,7 +21,7 @@ public extension URLSession {
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by URLSession. Default is `false`.
 	///   - callback: Closure to return the result of the request's execution.
 	func perform(_ urlRequest: URLRequest,
-				 maxRetries: Int = URLSession.maximumNumberOfRetries,
+				 maxRetries: Int = 10,
 				 allowEmptyData: Bool = false,
 				 callback: @escaping Callback)
 	{
