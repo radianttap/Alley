@@ -2,6 +2,7 @@
 ![platforms: iOS|tvOS|watchOS|macOS](https://img.shields.io/badge/platform-iOS|tvOS|watchOS|macOS-blue.svg)
 [![](https://img.shields.io/github/license/radianttap/Alley.svg)](https://github.com/radianttap/Alley/blob/master/LICENSE)
 ![](https://img.shields.io/badge/swift-5-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
+[![SwiftPM ready](https://img.shields.io/badge/SwiftPM-ready-FA7343.svg?style=flat)](https://swift.org/package-manager/)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-AD4709.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/badge/CocoaPods-compatible-fb0006.svg)](https://cocoapods.org)
 
@@ -40,20 +41,20 @@ with Alley you will do this:
 ```swift
 let urlRequest = URLRequest(...)
 
-urlSession.perform(urlRequest) {
+urlSession.performNetworkRequest(urlRequest) {
 	dataResult in
 	//...process dataResult
 }
 ```
 
-That’s the basic change, now let’s see what is this `DataResult` in the callback.
+That’s the basic change, now let’s see what is this `NetworkResult` in the callback.
 
-### DataResult
+### NetworkResult
 
 This is your standard Swift’s Result type, defined like this:
 
 ```swift
-typealias DataResult = Result<Data, NetworkError>
+typealias NetworkResult = Result<Data, NetworkError>
 ```
 
 In case the request was successful, you would get the `Data` instance returned from the service which you can convert into whatever you expected it to be.
