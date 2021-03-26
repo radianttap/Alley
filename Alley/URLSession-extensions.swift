@@ -34,9 +34,9 @@ extension URLSession {
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by URLSession. Default is `false`.
 	///   - callback: Closure to return the result of the request's execution.
 	public func performNetworkRequest(_ urlRequest: URLRequest,
-				 maxRetries: Int = 10,
-				 allowEmptyData: Bool = false,
-				 callback: @escaping NetworkCallback)
+									  maxRetries: Int = 10,
+									  allowEmptyData: Bool = false,
+									  callback: @escaping NetworkCallback)
 	{
 		if maxRetries <= 0 {
 			preconditionFailure("maxRetries must be 1 or larger.")
@@ -58,7 +58,6 @@ extension URLSession {
 }
 
 private extension URLSession {
-
 	///	Extra-step where `URLRequest`'s authorization should be handled, before actually performing the URLRequest in `execute()`
 	func applyAuthentication(_ networkRequest: NetworkRequest) {
 		let currentRetries = networkRequest.currentRetries
@@ -112,7 +111,7 @@ private extension URLSession {
 			return .failure( NetworkError.endpointError(httpURLResponse, data) )
 		}
 
-        guard let data = data, !data.isEmpty else {
+		guard let data = data, !data.isEmpty else {
 			if allowEmptyData {
 				return .success(Data())
 			}
@@ -123,32 +122,32 @@ private extension URLSession {
 		return .success(data)
 	}
 
-	///	Checks the result of URLSessionDataTask and if there were errors, should the URLRequest be retried.
+	///	Checks the result of `URLSessionDataTask` and if there were errors, should the `URLRequest` be retried.
 	func validate(_ result: NetworkResult, for networkRequest: NetworkRequest) {
 		let callback = networkRequest.callback
 
 		switch result {
-		case .success:
-			break
-
-		case .failure(let networkError):
-			switch networkError {
-			case .inaccessible:
-				//	too many failed network calls
+			case .success:
 				break
 
-			default:
-				if networkError.shouldRetry {
-					//	update retries count and
-					var newRequest = networkRequest
-					newRequest.currentRetries += 1
+			case .failure(let networkError):
+				switch networkError {
+					case .inaccessible:
+						//	too many failed network calls
+						break
 
-					//	try again, going through authentication again
-					//	(since it's quite possible that Auth token or whatever has expired)
-					self.applyAuthentication(newRequest)
-					return
+					default:
+						if networkError.shouldRetry {
+							//	update retries count and
+							var newRequest = networkRequest
+							newRequest.currentRetries += 1
+
+							//	try again, going through authentication again
+							//	(since it's quite possible that Auth token or whatever has expired)
+							self.applyAuthentication(newRequest)
+							return
+						}
 				}
-			}
 		}
 
 		callback(result)

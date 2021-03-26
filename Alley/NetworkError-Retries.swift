@@ -16,25 +16,26 @@ public extension NetworkError {
 	///
 	///	Upper layers of the app architecture may build on this to add more specific cases when the request should be retried.
 	var shouldRetry: Bool {
-
+		
 		switch self {
-		case .urlError(let urlError):
-			//	if temporary network issues, retry
-			switch urlError.code {
-			case URLError.timedOut,
-				 URLError.cannotFindHost,
-				 URLError.cannotConnectToHost,
-				 URLError.networkConnectionLost,
-				 URLError.dnsLookupFailed:
-				return true
+			case .urlError(let urlError):
+				//	if temporary network issues, retry
+				switch urlError.code {
+					case URLError.timedOut,
+						 URLError.cannotFindHost,
+						 URLError.cannotConnectToHost,
+						 URLError.networkConnectionLost,
+						 URLError.dnsLookupFailed:
+						return true
+						
+					default:
+						break
+				}
+				
 			default:
 				break
-			}
-
-		default:
-			break
 		}
-
+		
 		return false
 	}
 }
