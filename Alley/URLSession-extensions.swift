@@ -8,10 +8,23 @@
 
 import Foundation
 
-public extension URLSession {
+extension URLSession {
+	///	Helper type which groups input, output and metadata for one singular network call.
+	///
+	///	- `URLRequest` (input)
+	///	- `NetworkCallback` from the caller (output)
+	///	along with helpful processing properties, like number of retries.
+	public typealias NetworkRequest = (
+		urlRequest: URLRequest,
+		currentRetries: Int,
+		maxRetries: Int,
+		allowEmptyData: Bool,
+		callback: NetworkCallback
+	)
+
 	///	Output types
-	typealias DataResult = Result<Data, NetworkError>
-	typealias Callback = (DataResult) -> Void
+	public typealias NetworkResult = Result<Data, NetworkError>
+	public typealias NetworkCallback = (NetworkResult) -> Void
 
 	/// Executes given URLRequest instance, possibly retrying the said number of times. Through `callback` returns either `Data` from the response or `NetworkError` instance.
 	/// If any authentication needs to be done, it's handled internally by this methods and its derivatives.
@@ -20,33 +33,34 @@ public extension URLSession {
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by URLSession. Default is `false`.
 	///   - callback: Closure to return the result of the request's execution.
-	func perform(_ urlRequest: URLRequest,
+	public func performNetworkRequest(_ urlRequest: URLRequest,
 				 maxRetries: Int = 10,
 				 allowEmptyData: Bool = false,
-				 callback: @escaping Callback)
+				 callback: @escaping NetworkCallback)
 	{
 		if maxRetries <= 0 {
-			fatalError("maxRetries must be 1 or larger.")
+			preconditionFailure("maxRetries must be 1 or larger.")
 		}
 
 		let networkRequest = NetworkRequest(urlRequest, 0, maxRetries, allowEmptyData, callback)
-		authenticate(networkRequest)
+		applyAuthentication(networkRequest)
+	}
+
+	/// Override this method to apply desired authentication.
+	///
+	/// By default, this method does nothing, returning `networkRequest.urlRequest`.
+	/// - Parameter networkRequest: `NetworkRequest` instance created in `perform()` method.
+	/// - Returns: `URLRequest` instance updated with authentication.
+	open func authenticate(_ networkRequest: NetworkRequest) -> URLRequest {
+		let urlRequest = networkRequest.urlRequest
+		return urlRequest
 	}
 }
 
 private extension URLSession {
-	///	Helper type which groups `URLRequest` (input), `Callback` from the caller (output)
-	///	along with helpful processing properties, like number of retries.
-	typealias NetworkRequest = (
-		urlRequest: URLRequest,
-		currentRetries: Int,
-		maxRetries: Int,
-		allowEmptyData: Bool,
-		callback: Callback
-	)
 
 	///	Extra-step where `URLRequest`'s authorization should be handled, before actually performing the URLRequest in `execute()`
-	func authenticate(_ networkRequest: NetworkRequest) {
+	func applyAuthentication(_ networkRequest: NetworkRequest) {
 		let currentRetries = networkRequest.currentRetries
 		let max = networkRequest.maxRetries
 		let callback = networkRequest.callback
@@ -56,16 +70,14 @@ private extension URLSession {
 			callback( .failure( .inaccessible ) )
 		}
 
-		//	NOTE: this is the place to handle OAuth2
-		//	or some other form of URLRequest‘s authorization
+		let authenticatedURLRequest = authenticate(networkRequest)
 
 		//	now execute the request
-		execute(networkRequest)
+		execute(authenticatedURLRequest, for: networkRequest)
 	}
 
 	///	Creates the instance of `URLSessionDataTask`, performs it then lightly processes the response before calling `validate`.
-	func execute(_ networkRequest: NetworkRequest) {
-		let urlRequest = networkRequest.urlRequest
+	func execute(_ urlRequest: URLRequest, for networkRequest: NetworkRequest) {
 
 		let task = dataTask(with: urlRequest) {
 			[unowned self] data, urlResponse, error in
@@ -78,7 +90,7 @@ private extension URLSession {
 	}
 
 	///	Process results of `URLSessionDataTask` and converts it into `DataResult` instance
-	func process(_ data: Data?, _ urlResponse: URLResponse?, _ error: Error?, for networkRequest: NetworkRequest) -> DataResult {
+	func process(_ data: Data?, _ urlResponse: URLResponse?, _ error: Error?, for networkRequest: NetworkRequest) -> NetworkResult {
 		let allowEmptyData = networkRequest.allowEmptyData
 
 		if let urlError = error as? URLError {
@@ -112,7 +124,7 @@ private extension URLSession {
 	}
 
 	///	Checks the result of URLSessionDataTask and if there were errors, should the URLRequest be retried.
-	func validate(_ result: DataResult, for networkRequest: NetworkRequest) {
+	func validate(_ result: NetworkResult, for networkRequest: NetworkRequest) {
 		let callback = networkRequest.callback
 
 		switch result {
@@ -130,9 +142,10 @@ private extension URLSession {
 					//	update retries count and
 					var newRequest = networkRequest
 					newRequest.currentRetries += 1
+
 					//	try again, going through authentication again
 					//	(since it's quite possible that Auth token or whatever has expired)
-					self.authenticate(newRequest)
+					self.applyAuthentication(newRequest)
 					return
 				}
 			}
