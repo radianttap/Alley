@@ -43,15 +43,15 @@ extension URLSession {
 		}
 
 		let networkRequest = NetworkRequest(urlRequest, 0, maxRetries, allowEmptyData, callback)
-		applyAuthentication(networkRequest)
+		applyAuthorization(networkRequest)
 	}
 
-	/// Override this method to apply desired authentication.
+	/// Override this method to apply desired authorization.
 	///
 	/// By default, this method does nothing, returning `networkRequest.urlRequest`.
 	/// - Parameter networkRequest: `NetworkRequest` instance created in `perform()` method.
 	/// - Returns: `URLRequest` instance updated with authentication.
-	open func authenticate(_ networkRequest: NetworkRequest) -> URLRequest {
+	open func authorize(_ networkRequest: NetworkRequest) -> URLRequest {
 		let urlRequest = networkRequest.urlRequest
 		return urlRequest
 	}
@@ -59,7 +59,7 @@ extension URLSession {
 
 private extension URLSession {
 	///	Extra-step where `URLRequest`'s authorization should be handled, before actually performing the URLRequest in `execute()`
-	func applyAuthentication(_ networkRequest: NetworkRequest) {
+	func applyAuthorization(_ networkRequest: NetworkRequest) {
 		let currentRetries = networkRequest.currentRetries
 		let max = networkRequest.maxRetries
 		let callback = networkRequest.callback
@@ -69,10 +69,10 @@ private extension URLSession {
 			callback( .failure( .inaccessible ) )
 		}
 
-		let authenticatedURLRequest = authenticate(networkRequest)
+		let authURLRequest = authorize(networkRequest)
 
 		//	now execute the request
-		execute(authenticatedURLRequest, for: networkRequest)
+		execute(authURLRequest, for: networkRequest)
 	}
 
 	///	Creates the instance of `URLSessionDataTask`, performs it then lightly processes the response before calling `validate`.
@@ -144,7 +144,7 @@ private extension URLSession {
 
 							//	try again, going through authentication again
 							//	(since it's quite possible that Auth token or whatever has expired)
-							self.applyAuthentication(newRequest)
+							self.applyAuthorization(newRequest)
 							return
 						}
 				}
