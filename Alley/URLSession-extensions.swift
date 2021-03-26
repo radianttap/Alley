@@ -45,7 +45,7 @@ extension URLSession {
 
 		let networkRequest = NetworkRequest(
 			urlRequest,
-			0,
+			1,
 			maxRetries,
 			allowEmptyData,
 			callback
