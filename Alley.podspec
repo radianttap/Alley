@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'Alley'
-  s.version      = '0.9'
+  s.version      = '2.0'
   s.summary      = 'URLSessionDataTask with automatic retry mechanism.'
   s.description  = 'An extension for URLSession to perform automatic retries of request towards HTTP(S) web services.'
 

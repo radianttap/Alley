@@ -24,6 +24,8 @@
 		D05AF766239D614900F88E45 /* NetworkError-Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError-Localized.swift"; sourceTree = "<group>"; };
 		D05AF768239D636700F88E45 /* URLSession-Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession-Extensions.swift"; sourceTree = "<group>"; };
 		D05AF76A239E352200F88E45 /* NetworkError-Retries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkError-Retries.swift"; sourceTree = "<group>"; };
+		D0AAB08F260E6EAF008E5C3B /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		D0AAB090260E6EAF008E5C3B /* Alley.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Alley.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +42,8 @@
 		D05AF74E239D2A0200F88E45 = {
 			isa = PBXGroup;
 			children = (
+				D0AAB090260E6EAF008E5C3B /* Alley.podspec */,
+				D0AAB08F260E6EAF008E5C3B /* Package.swift */,
 				D008971B239E64530013481B /* LICENSE */,
 				D008971C239E64530013481B /* README.md */,
 				D05AF763239D5FA300F88E45 /* Alley */,
