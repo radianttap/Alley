@@ -1,5 +1,5 @@
 //
-//  URLSession-extensions.swift
+//  URLSession-Extensions.swift
 //  Alley
 //
 //  Copyright © 2019 Radiant Tap
@@ -33,50 +33,33 @@ extension URLSession {
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by URLSession. Default is `false`.
 	///   - callback: Closure to return the result of the request's execution.
-	public func performNetworkRequest(_ urlRequest: URLRequest,
-									  maxRetries: Int = 10,
-									  allowEmptyData: Bool = false,
-									  callback: @escaping NetworkCallback)
+	public func performNetworkRequest(
+		_ urlRequest: URLRequest,
+		maxRetries: Int = 10,
+		allowEmptyData: Bool = false,
+		callback: @escaping NetworkCallback)
 	{
 		if maxRetries <= 0 {
 			preconditionFailure("maxRetries must be 1 or larger.")
 		}
 
-		let networkRequest = NetworkRequest(urlRequest, 0, maxRetries, allowEmptyData, callback)
-		applyAuthorization(networkRequest)
-	}
+		let networkRequest = NetworkRequest(
+			urlRequest,
+			0,
+			maxRetries,
+			allowEmptyData,
+			callback
+		)
 
-	/// Override this method to apply desired authorization.
-	///
-	/// By default, this method does nothing, returning `networkRequest.urlRequest`.
-	/// - Parameter networkRequest: `NetworkRequest` instance created in `perform()` method.
-	/// - Returns: `URLRequest` instance updated with authentication.
-	open func authorize(_ networkRequest: NetworkRequest) -> URLRequest {
-		let urlRequest = networkRequest.urlRequest
-		return urlRequest
+		//	now execute the request
+		execute(networkRequest)
 	}
 }
 
 private extension URLSession {
-	///	Extra-step where `URLRequest`'s authorization should be handled, before actually performing the URLRequest in `execute()`
-	func applyAuthorization(_ networkRequest: NetworkRequest) {
-		let currentRetries = networkRequest.currentRetries
-		let max = networkRequest.maxRetries
-		let callback = networkRequest.callback
-
-		if currentRetries >= max {
-			//	Too many unsuccessful attemps
-			callback( .failure( .inaccessible ) )
-		}
-
-		let authURLRequest = authorize(networkRequest)
-
-		//	now execute the request
-		execute(authURLRequest, for: networkRequest)
-	}
-
 	///	Creates the instance of `URLSessionDataTask`, performs it then lightly processes the response before calling `validate`.
-	func execute(_ urlRequest: URLRequest, for networkRequest: NetworkRequest) {
+	func execute(_ networkRequest: NetworkRequest) {
+		let urlRequest = networkRequest.urlRequest
 
 		let task = dataTask(with: urlRequest) {
 			[unowned self] data, urlResponse, error in
@@ -131,22 +114,19 @@ private extension URLSession {
 				break
 
 			case .failure(let networkError):
-				switch networkError {
-					case .inaccessible:
-						//	too many failed network calls
-						break
+				if networkError.shouldRetry {
+					//	update retries count
+					var newRequest = networkRequest
+					newRequest.currentRetries += 1
 
-					default:
-						if networkError.shouldRetry {
-							//	update retries count and
-							var newRequest = networkRequest
-							newRequest.currentRetries += 1
+					if newRequest.currentRetries >= newRequest.maxRetries {
+						callback(.failure(.inaccessible))
+						return
+					}
 
-							//	try again, going through authentication again
-							//	(since it's quite possible that Auth token or whatever has expired)
-							self.applyAuthorization(newRequest)
-							return
-						}
+					//	try again
+					self.execute(newRequest)
+					return
 				}
 		}
 
