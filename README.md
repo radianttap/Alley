@@ -21,6 +21,45 @@ Second point is nice to have. First one is vastly more important since that data
 
 Thus main feature of Alley is **automatic request retries** for predefined conditions.
 
+## Integration
+
+### Manually 
+
+Just drag `Alley` folder into your project.
+
+If you prefer to use dependency managers, see below. 
+Releases are tagged with [Semantic Versioning](https://semver.org) in mind.
+
+### Swift Package Manager 
+
+Ready, just add this repo URL as Package. I recommend to link with `master` branch, not with specific version.
+
+### CocoaPods
+
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate Alley into your Xcode project using CocoaPods, specify it in your `Podfile`:
+
+```ruby
+pod 'Alley', 	:git => 'https://github.com/radianttap/Alley.git'
+```
+
+### Setting up with Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that automates the process of adding frameworks to your Cocoa application.
+
+You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
+
+```bash
+$ brew update
+$ brew install carthage
+```
+
+To integrate Alley into your Xcode project using Carthage, specify it in your `Cartfile`:
+
+```ogdl
+github "radianttap/Alley"
+```
+
+
 ## Usage
 
 You would already have some `URLSession` instance to work with. Then instead of this:
@@ -42,8 +81,8 @@ with Alley you will do this:
 let urlRequest = URLRequest(...)
 
 urlSession.performNetworkRequest(urlRequest) {
-	dataResult in
-	//...process dataResult
+	networkResult in
+	//...process networkResult
 }
 ```
 
@@ -85,7 +124,7 @@ Next, if the returned `URLResponse` is not `HTTPURLResponse`:
 case invalidResponseType(URLResponse)
 ```
 
-Now, if it is `HTTPURLResponse` but status code is `400` or higher, this is an error returned by the web service endpoint you are communicating with. Hence return the entire `HTTPURLResponse` and `Data` (if it exists) so caller can figure out what happened.
+Now, if it is `HTTPURLResponse` but status code is `400` or higher, this is an error returned by the web service endpoint you are communicating with. Hence you get the entire `HTTPURLResponse` and `Data` (if it exists) so caller can figure out what happened.
 
 ```swift
 case endpointError(HTTPURLResponse, Data?)
@@ -104,9 +143,9 @@ This may or may not be an error. If you perform `PUT` or `DELETE` or even `POST`
 ```swift
 let urlRequest = URLRequest(...)
 
-urlSession.perform(urlRequest, allowEmptyData: true) {
-	dataResult in
-	//...process dataResult
+urlSession.performNetworkRequest(urlRequest, allowEmptyData: true) {
+	networkResult in
+	//...process networkResult
 }
 ```
 
@@ -123,9 +162,9 @@ This value is automatically used for all `perform()` calls but you can adjust it
 ```swift
 let urlRequest = URLRequest(...)
 
-urlSession.perform(urlRequest, maxRetries: 5) {
-	dataResult in
-	//...process dataResult
+urlSession.performNetworkRequest(urlRequest, maxRetries: 5) {
+	networkResult in
+	//...process networkResult
 }
 ```
 
