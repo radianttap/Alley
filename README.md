@@ -187,4 +187,4 @@ That’s about it. Alley is intentionally simple to encourage writing as little 
 
 ## Give back
 
-If you found this library usefuo, you can [buy me a coffee](https://www.buymeacoffee.com/radianttap) if you wish.
+If you found this code useful, please consider [buying me a coffee](https://www.buymeacoffee.com/radianttap) or two. ☕️😋
