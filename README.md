@@ -185,3 +185,6 @@ That’s about it. Alley is intentionally simple to encourage writing as little 
 
 [MIT License,](https://github.com/radianttap/Alley/blob/v2/LICENSE) like all my open source code.
 
+## Give back
+
+If you found this library usefuo, you can [buy me a coffee](https://www.buymeacoffee.com/radianttap) if you wish.
