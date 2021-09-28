@@ -21,7 +21,7 @@ extension NetworkError: LocalizedError {
 				return NSLocalizedString("Internal error", comment: "")
 				
 			case .noResponseData:
-				return nil
+				return NSLocalizedString("Response body is empty.", comment: "")
 				
 			case .endpointError(let httpURLResponse, _):
 				let s = "\( httpURLResponse.statusCode ) \( HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode) )"
