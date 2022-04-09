@@ -8,6 +8,58 @@
 
 import Foundation
 
+extension NetworkError: CustomStringConvertible {
+	public var description: String {
+		switch self {
+			case .generalError(let error):
+				return String(describing: error)
+
+			case .urlError(let urlError):
+				return String(describing: urlError)
+
+			case .invalidResponseType, .noResponse:
+				return "Unexpected response received or no response at all."
+
+			case .noResponseData:
+				return "Response body is empty."
+
+			case .endpointError(let httpURLResponse, _):
+				let s = "Web service network error: \( httpURLResponse.statusCode ) \( HTTPURLResponse.localizedString(forStatusCode: httpURLResponse.statusCode) )"
+				return s
+
+			case .inaccessible:
+				return "Service not accessible"
+		}
+	}
+}
+
+extension NetworkError: CustomDebugStringConvertible {
+	public var debugDescription: String {
+		switch self {
+			case .generalError(let error):
+				return String(reflecting: error)
+
+			case .urlError(let urlError):
+				return String(reflecting: urlError)
+
+			case .invalidResponseType(let response):
+				return "Unexpected response type (not HTTP)\n\( String(reflecting: response) )"
+
+			case .noResponse:
+				return "No response received."
+
+			case .noResponseData:
+				return "Response body is empty."
+
+			case .endpointError(let httpURLResponse, let data):
+				return "\( httpURLResponse.formattedHeaders )\n\n\( data?.utf8StringRepresentation ?? "" )"
+
+			case .inaccessible:
+				return "Service not accessible"
+		}
+	}
+}
+
 extension NetworkError: LocalizedError {
 	public var errorDescription: String? {
 		switch self {
