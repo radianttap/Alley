@@ -155,7 +155,7 @@ extension URLSession {
 	///   - urlRequest: `URLRequest` instance to execute.
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by `URLSession`. Default is `false`.
-	public func performNetworkRequest(_ urlRequest: URLRequest, maxRetries: Int = 10, allowEmptyData: Bool = false) async throws -> Data {
+	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, allowEmptyData: Bool = false) async throws -> Data {
 		let networkRequest = RetriableRequest(
 			urlRequest,
 			1,
