@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name         = 'Alley'
-  s.version      = '2.0.1'
+  s.version      = '2.1'
   s.summary      = 'URLSessionDataTask with automatic retry mechanism.'
-  s.description  = 'An extension for URLSession to perform automatic retries of request towards HTTP(S) web services.'
+  s.description  = 'An extension for URLSession to perform automatic retries of request towards HTTP(S) web services. Supports async/await.'
 
   s.homepage     = 'https://github.com/radianttap/Alley'
   s.license      = { :type => "MIT", :file => "LICENSE" }
