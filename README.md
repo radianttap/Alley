@@ -1,7 +1,7 @@
 [![](https://img.shields.io/github/tag/radianttap/Alley.svg?label=current)](https://github.com/radianttap/Alley/releases)
 ![platforms: iOS|tvOS|watchOS|macOS](https://img.shields.io/badge/platform-iOS|tvOS|watchOS|macOS-blue.svg)
 [![](https://img.shields.io/github/license/radianttap/Alley.svg)](https://github.com/radianttap/Alley/blob/master/LICENSE)
-![](https://img.shields.io/badge/swift-5-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
+![](https://img.shields.io/badge/swift-5.5-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
 [![SwiftPM ready](https://img.shields.io/badge/SwiftPM-ready-FA7343.svg?style=flat)](https://swift.org/package-manager/)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-AD4709.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/badge/CocoaPods-compatible-fb0006.svg)](https://cocoapods.org)
@@ -19,7 +19,7 @@ In most cases where you need to fetch something from the internet, you:
 
 Second point is nice to have. First one is vastly more important since that data is the reason you are doing this at all.
 
-Thus main feature of Alley is **automatic request retries** for predefined conditions.
+> Thus main feature of Alley is **automatic request retries** for predefined conditions.
 
 ## Integration
 
@@ -75,7 +75,7 @@ urlSession.dataTask(with: urlRequest) {
 task.resume()
 ```
 
-with Alley you will do this:
+with _Alley_ you will do this:
 
 ```swift
 let urlRequest = URLRequest(...)
@@ -84,13 +84,17 @@ urlSession.performNetworkRequest(urlRequest) {
 	networkResult in
 	//...process networkResult
 }
+
+// -- or --
+
+do {
+	let data = try await urlSession.alleyData(for: urlRequest)
+} catch let err {
+	//...process NetworkError
+}
 ```
 
-That’s the basic change, now let’s see what is this `NetworkResult` in the callback.
-
-### NetworkResult
-
-This is your standard Swift’s Result type, defined like this:
+`NetworkResult` is your standard Swift’s Result type, defined like this:
 
 ```swift
 typealias NetworkResult = Result<Data, NetworkError>
@@ -98,7 +102,9 @@ typealias NetworkResult = Result<Data, NetworkError>
 
 In case the request was successful, you would get the `Data` instance returned from the service which you can convert into whatever you expected it to be.
 
-In case of failure, you get an instance of `NetworkError`.
+Of course, with async/await, you will get `Data` directly.
+
+Either way — in case of failure you will get an instance of `NetworkError`.
 
 ### NetworkError
 
@@ -147,9 +153,13 @@ urlSession.performNetworkRequest(urlRequest, allowEmptyData: true) {
 	networkResult in
 	//...process networkResult
 }
+
+// -- or --
+
+let data = try await urlSession.alleyData(for: urlRequest, allowEmptyData: true)
 ```
 
-where you will get empty `Data()` instance as `DataResult.success`.
+where you will get empty `Data()` instance as `NetworkResult.success`.
 
 There’s one more possible `NetworkError` value, which is related to...
 
@@ -157,7 +167,7 @@ There’s one more possible `NetworkError` value, which is related to...
 
 Default number of retries is `10`.
 
-This value is automatically used for all `perform()` calls but you can adjust it per call by simply supplying appropriate number to `maxRetries` argument:
+This value is automatically used for all networking calls but you can adjust it per call by simply supplying appropriate number to `maxRetries` argument:
 
 ```swift
 let urlRequest = URLRequest(...)
@@ -166,20 +176,23 @@ urlSession.performNetworkRequest(urlRequest, maxRetries: 5) {
 	networkResult in
 	//...process networkResult
 }
+
+// -- or --
+
+let data = try await urlSession.alleyData(for: urlRequest, maxRetries: 5)
 ```
 
 How automatic retries work? 
 
-In case of a `NetworkError` being raised, Alley will check its `shouldRetry` property and – if that’s `true` – it will increment retry counter by 1 and perform `URLSessionDataTask` again. And again. And again...until it reaches `maxRetries` value when it will return `NetworkError.inaccessible` as result.
+In case of a `NetworkError` being raised, _Alley_ will check its `shouldRetry` property and – if that’s `true` – it will increment retry counter by 1 and perform `URLSessionDataTask` again. And again. And again...until it reaches `maxRetries` value when it will return `NetworkError.inaccessible` as result.
 
-There is currently no delay between retries, it simply tries again.
+Each retry is delayed by half a second (see `NetworkError.defaultRetryDelay`).
 
 You can customize the behavior by changing the implementation of `shouldRetry` property. 
-Currently it deals only with `NetworkError.urlError` and returns `true` for several obvious `URLError` instances.
 
 * * *
 
-That’s about it. Alley is intentionally simple to encourage writing as little code as possible, hiding away often-repeated boilerplate.
+That’s about it. _Alley_ is intentionally simple to encourage writing as little code as possible, hiding away often-repeated boilerplate.
 
 ## License
 
