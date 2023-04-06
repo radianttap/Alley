@@ -9,6 +9,7 @@
 import Foundation
 import Alley
 
+@MainActor
 final class DataManager: ObservableObject {
 	@Published private(set) var zens: [String] = []
 
@@ -52,7 +53,39 @@ extension DataManager {
 		}
 	}
 }
+	
+//	MARK: Async / Await
 
+extension DataManager {
+	func startFetchingAsyncAwait() {
+		Task {
+			await fetchAsyncAwait()
+		}
+	}
+	
+	func fetchAsyncAwait() async {
+		let urlRequest = URLRequest(url: URL(string: "https://api.github.com/zen")!)
+
+		do {
+			let data = try await urlSession.alleyData(for: urlRequest, maxRetries: 3)
+			if let s = data.utf8StringRepresentation {
+				self.zens.append(s)
+			}
+
+		} catch let networkError {
+			print(networkError)
+		}
+		
+		await scheduleAsyncAwait()
+	}
+	
+	private func scheduleAsyncAwait() async {
+		try? await Task.sleep(nanoseconds: UInt64(3 * 1_000_000_000))
+		await fetchAsyncAwait()
+	}
+}
+
+//	MARK: Internals
 
 private extension DataManager {
 	func prepareSession() -> URLSession {
