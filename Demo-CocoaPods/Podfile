@@ -1,8 +1,0 @@
-# Uncomment the next line to define a global platform for your project
-
-target 'AlleyDemo' do
-  use_frameworks!
-  platform :ios, '12.0'
-
-  pod 'Alley', :path => '../'
-end
