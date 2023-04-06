@@ -19,7 +19,7 @@ extension DataManager {
 	func fetch() {
 		let urlRequest = URLRequest(url: URL(string: "https://api.github.com/zen")!)
 
-		urlSession.perform(urlRequest, maxRetries: 3) {
+		urlSession.performNetworkRequest(urlRequest, maxRetries: 3) {
 			[unowned self] dataResult in
 
 			DispatchQueue.main.async {
