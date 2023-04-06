@@ -15,33 +15,39 @@ final class DataManager: ObservableObject {
 	private lazy var urlSession: URLSession = prepareSession()
 }
 
-extension DataManager {
-	func fetch() {
-		let urlRequest = URLRequest(url: URL(string: "https://api.github.com/zen")!)
+//	MARK: Old-school
 
+extension DataManager {
+	func startFetching() {
+		fetch()
+	}
+	
+	private func fetch() {
+		let urlRequest = URLRequest(url: URL(string: "https://api.github.com/zen")!)
+		
 		urlSession.performNetworkRequest(urlRequest, maxRetries: 3) {
 			[unowned self] dataResult in
-
-			DispatchQueue.main.async {
-				switch dataResult {
+			
+			switch dataResult {
 				case .success(let data):
 					if let s = data.utf8StringRepresentation {
-						self.zens.append(s)
+						DispatchQueue.main.async {
+							self.zens.append(s)
+						}
 					}
-
+					
 				case .failure(let networkError):
 					print(networkError)
-				}
-
-				self.schedule()
 			}
+			
+			self.schedule()
 		}
 	}
-
-	func schedule() {
+	
+	private func schedule() {
 		DispatchQueue.global().asyncAfter(deadline: .now() + 3) {
 			[unowned self] in
-
+			
 			self.fetch()
 		}
 	}
