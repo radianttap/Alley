@@ -23,9 +23,6 @@ public enum NetworkError: Error {
 	///	URLSession returned an `Error` object which is not `URLError`
 	case generalError(Swift.Error)
 	
-	///	When no `URLResponse` is returned but also no `URLError` or any other `Error` instance.
-	case noResponse
-	
 	///	When `URLResponse` is not `HTTPURLResponse`.
 	case invalidResponseType(URLResponse)
 	

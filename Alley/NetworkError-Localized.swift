@@ -17,7 +17,7 @@ extension NetworkError: CustomStringConvertible {
 			case .urlError(let urlError):
 				return String(describing: urlError)
 
-			case .invalidResponseType, .noResponse:
+			case .invalidResponseType:
 				return "Unexpected response received or no response at all."
 
 			case .noResponseData:
@@ -45,9 +45,6 @@ extension NetworkError: CustomDebugStringConvertible {
 			case .invalidResponseType(let response):
 				return "Unexpected response type (not HTTP)\n\( String(reflecting: response) )"
 
-			case .noResponse:
-				return "No response received."
-
 			case .noResponseData:
 				return "Response body is empty."
 
@@ -69,7 +66,7 @@ extension NetworkError: LocalizedError {
 			case .urlError(let urlError):
 				return urlError.localizedDescription
 				
-			case .invalidResponseType, .noResponse:
+			case .invalidResponseType:
 				return NSLocalizedString("Internal error", comment: "")
 				
 			case .noResponseData:
@@ -91,9 +88,6 @@ extension NetworkError: LocalizedError {
 				
 			case .urlError(let urlError):
 				return (urlError as NSError).localizedFailureReason
-				
-			case .noResponse:
-				return NSLocalizedString("Request apparently succeeded (no errors) but URLResponse was not received.", comment: "")
 				
 			case .invalidResponseType(let response):
 				return String(format: NSLocalizedString("Response is not HTTP response.\n\n%@", comment: ""), response)

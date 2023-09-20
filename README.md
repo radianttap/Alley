@@ -32,7 +32,10 @@ Releases are tagged with [Semantic Versioning](https://semver.org) in mind.
 
 ### Swift Package Manager 
 
-Ready, just add this repo URL as Package. I recommend to link with `master` branch, not with specific version.
+Ready, just add this repo URL as Package. 
+
+- Version 2.x supports old school stuff with completion handlers.
+- Version 3.x is pure `async`/`await`.
 
 ### CocoaPods
 
@@ -67,25 +70,17 @@ You would already have some `URLSession` instance to work with. Then instead of 
 ```swift
 let urlRequest = URLRequest(...)
 
-urlSession.dataTask(with: urlRequest) {
-	data, urlResponse, error in
-	//...process error, response, data
+do {
+	let data = try await urlSession.data(for: urlRequest)
+} catch let err {
+	//...process error
 }
-
-task.resume()
 ```
 
 with _Alley_ you will do this:
 
 ```swift
 let urlRequest = URLRequest(...)
-
-urlSession.performNetworkRequest(urlRequest) {
-	networkResult in
-	//...process networkResult
-}
-
-// -- or --
 
 do {
 	let data = try await urlSession.alleyData(for: urlRequest)
@@ -94,17 +89,9 @@ do {
 }
 ```
 
-`NetworkResult` is your standard Swift’s Result type, defined like this:
-
-```swift
-typealias NetworkResult = Result<Data, NetworkError>
-```
-
 In case the request was successful, you would get the `Data` instance returned from the service which you can convert into whatever you expected it to be.
 
-Of course, with async/await, you will get `Data` directly.
-
-Either way — in case of failure you will get an instance of `NetworkError`.
+In case of failure you will get an instance of `NetworkError`.
 
 ### NetworkError
 
@@ -116,12 +103,6 @@ case urlError(URLError)
 
 ///	URLSession returned an `Error` object which is not `URLError`
 case generalError(Swift.Error)
-```
-
-Then it handles the least possible scenario to happen: no error returned by `URLSessionDataTask` but also no `URLResponse`.
-
-```swift
-case noResponse
 ```
 
 Next, if the returned `URLResponse` is not `HTTPURLResponse`:
@@ -149,17 +130,10 @@ This may or may not be an error. If you perform `PUT` or `DELETE` or even `POST`
 ```swift
 let urlRequest = URLRequest(...)
 
-urlSession.performNetworkRequest(urlRequest, allowEmptyData: true) {
-	networkResult in
-	//...process networkResult
-}
-
-// -- or --
-
 let data = try await urlSession.alleyData(for: urlRequest, allowEmptyData: true)
 ```
 
-where you will get empty `Data()` instance as `NetworkResult.success`.
+where you will get empty `Data()`.
 
 There’s one more possible `NetworkError` value, which is related to...
 
@@ -171,13 +145,6 @@ This value is automatically used for all networking calls but you can adjust it 
 
 ```swift
 let urlRequest = URLRequest(...)
-
-urlSession.performNetworkRequest(urlRequest, maxRetries: 5) {
-	networkResult in
-	//...process networkResult
-}
-
-// -- or --
 
 let data = try await urlSession.alleyData(for: urlRequest, maxRetries: 5)
 ```
