@@ -1,7 +1,9 @@
 [![](https://img.shields.io/github/tag/radianttap/Alley.svg?label=current)](https://github.com/radianttap/Alley/releases)
-![platforms: iOS|tvOS|watchOS|macOS](https://img.shields.io/badge/platform-iOS|tvOS|watchOS|macOS-blue.svg)
 [![](https://img.shields.io/github/license/radianttap/Alley.svg)](https://github.com/radianttap/Alley/blob/master/LICENSE)
-![](https://img.shields.io/badge/swift-5.5-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
+![](https://img.shields.io/badge/swift-5.9-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
+\
+![platforms: iOS|tvOS|watchOS|macOS|visionOS](https://img.shields.io/badge/platform-iOS|tvOS|watchOS|macOS-blue.svg)
+\
 [![SwiftPM ready](https://img.shields.io/badge/SwiftPM-ready-FA7343.svg?style=flat)](https://swift.org/package-manager/)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-AD4709.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/badge/CocoaPods-compatible-fb0006.svg)](https://cocoapods.org)
@@ -153,9 +155,15 @@ How automatic retries work?
 
 In case of a `NetworkError` being raised, _Alley_ will check its `shouldRetry` property and – if that’s `true` – it will increment retry counter by 1 and perform `URLSessionDataTask` again. And again. And again...until it reaches `maxRetries` value when it will return `NetworkError.inaccessible` as result.
 
-Each retry is delayed by half a second (see `NetworkError.defaultRetryDelay`).
+Each retry is delayed by half a second but you can supply any value you want (including `0`) in the call to `alleyData`, argument `retryInterval`.
 
-You can customize the behavior by changing the implementation of `shouldRetry` property. 
+```swift
+let urlRequest = URLRequest(...)
+
+let data = try await urlSession.alleyData(for: urlRequest, retryInterval: 0.3)
+```
+
+You can customize the behavior by changing the implementation of `shouldRetry` property (in this case I recommend to manually copy Alley folder into your project).
 
 * * *
 
