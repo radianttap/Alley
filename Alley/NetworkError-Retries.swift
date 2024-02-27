@@ -9,9 +9,6 @@
 import Foundation
 
 public extension NetworkError {
-	///	How much should we wait before retrying the network call, by default.
-	static var defaultRetryDelay: TimeInterval = 0.5
-	
 	///	Returns `true` if `URLRequest` should be retried for the given `NetworkError` instance.
 	///
 	///	At the lowest network levels, it makes sense to retry for cases of (possible) temporary outage. Things like timeouts, can't connect to host, network connection lost.
@@ -53,10 +50,5 @@ public extension NetworkError {
 		}
 		
 		return false
-	}
-	
-	///	How much should we wait before retrying the network call.
-	var retryInterval: TimeInterval {
-		return Self.defaultRetryDelay
 	}
 }
