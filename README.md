@@ -1,6 +1,6 @@
 [![](https://img.shields.io/github/tag/radianttap/Alley.svg?label=current)](https://github.com/radianttap/Alley/releases)
 [![](https://img.shields.io/github/license/radianttap/Alley.svg)](https://github.com/radianttap/Alley/blob/master/LICENSE)
-![](https://img.shields.io/badge/swift-5.9-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
+![](https://img.shields.io/badge/swift-6.0-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
 \
 ![platforms: iOS|tvOS|watchOS|macOS|visionOS](https://img.shields.io/badge/platform-iOS|tvOS|watchOS|macOS-blue.svg)
 \
@@ -10,7 +10,7 @@
 
 # Alley
 
-Essential `URLSessionDataTask` micro-wrapper for communication with HTTP(S) web services. This is built as framework but it’s so small that I encourage you to simply copy the Alley folder into your project directly.
+Essential `URLSessionDataTask` micro-wrapper for communication with HTTP(S) web services. 
 
 ## Why
 
@@ -25,45 +25,13 @@ Second point is nice to have. First one is vastly more important since that data
 
 ## Integration
 
-### Manually 
-
 Just drag `Alley` folder into your project.
 
-If you prefer to use dependency managers, see below. 
-Releases are tagged with [Semantic Versioning](https://semver.org) in mind.
-
-### Swift Package Manager 
-
-Ready, just add this repo URL as Package. 
+Of just add this repo URL as Package. 
 
 - Version 2.x supports old school stuff with completion handlers.
 - Version 3.x is pure `async`/`await`.
-
-### CocoaPods
-
-[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate Alley into your Xcode project using CocoaPods, specify it in your `Podfile`:
-
-```ruby
-pod 'Alley', 	:git => 'https://github.com/radianttap/Alley.git'
-```
-
-### Setting up with Carthage
-
-[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that automates the process of adding frameworks to your Cocoa application.
-
-You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
-
-```bash
-$ brew update
-$ brew install carthage
-```
-
-To integrate Alley into your Xcode project using Carthage, specify it in your `Cartfile`:
-
-```ogdl
-github "radianttap/Alley"
-```
-
+- Version 4.x has strict concurrency checking turned ON and Swift 6 language mode.
 
 ## Usage
 
@@ -153,7 +121,7 @@ let data = try await urlSession.alleyData(for: urlRequest, maxRetries: 5)
 
 How automatic retries work? 
 
-In case of a `NetworkError` being raised, _Alley_ will check its `shouldRetry` property and – if that’s `true` – it will increment retry counter by 1 and perform `URLSessionDataTask` again. And again. And again...until it reaches `maxRetries` value when it will return `NetworkError.inaccessible` as result.
+In case of a `NetworkError` being raised, _Alley_ will check its `shouldRetry` property and – if `true` – it will increment retry counter by 1 and perform `URLSessionDataTask` again. And again. And again...until it reaches `maxRetries` value when it will return `NetworkError.inaccessible` as result.
 
 Each retry is delayed by half a second but you can supply any value you want (including `0`) in the call to `alleyData`, argument `retryInterval`.
 
