@@ -8,7 +8,7 @@
 
 import Foundation
 
-@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+@available(macOS 12, iOS 15, watchOS 10.0, tvOS 15, visionOS 1, *)
 extension URLSession {
 	/// Executes given `URLRequest` instance, possibly retrying the said number of times. Returns `Data` from the response or throws some `NetworkError` instance.
 	///
@@ -30,7 +30,7 @@ extension URLSession {
 	}
 }
 
-@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+@available(macOS 12, iOS 15, watchOS 10.0, tvOS 15, visionOS 1, *)
 private extension URLSession {
 
 	typealias RetriableRequest = (
