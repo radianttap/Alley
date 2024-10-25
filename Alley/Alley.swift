@@ -18,7 +18,7 @@ extension URLSession {
 	///   - urlRequest: `URLRequest` instance to execute.
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by `URLSession`. Default is `false`.
-	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false) async throws -> Data {
+	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false) async throws(NetworkError) -> Data {
 		let networkRequest = RetriableRequest(
 			urlRequest,
 			1,
@@ -41,7 +41,7 @@ private extension URLSession {
 	)
 
 	///
-	func execute(_ networkRequest: RetriableRequest, retryInterval: TimeInterval) async throws -> Data {
+	func execute(_ networkRequest: RetriableRequest, retryInterval: TimeInterval) async throws(NetworkError) -> Data {
 		let urlRequest = networkRequest.urlRequest
 		
 		do {
@@ -61,7 +61,7 @@ private extension URLSession {
 	}
 
 	///
-	func verify(_ data: Data, _ urlResponse: URLResponse, for networkRequest: RetriableRequest, retryInterval: TimeInterval) throws {
+	func verify(_ data: Data, _ urlResponse: URLResponse, for networkRequest: RetriableRequest, retryInterval: TimeInterval) throws(NetworkError) {
 	
 		guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
 			throw NetworkError.invalidResponseType(urlResponse)
@@ -77,7 +77,7 @@ private extension URLSession {
 	}
 	
 	///
-	func retry(_ networkRequest: RetriableRequest, ifPossibleFor err: NetworkError, retryInterval: TimeInterval) async throws -> Data {
+	func retry(_ networkRequest: RetriableRequest, ifPossibleFor err: NetworkError, retryInterval: TimeInterval) async throws(NetworkError) -> Data {
 		guard err.shouldRetry else {
 			throw err
 		}
@@ -91,7 +91,13 @@ private extension URLSession {
 		}
 		
 		if retryInterval > 0 {
-			try await Task.sleep(nanoseconds: UInt64(retryInterval * 1_000_000_000))
+			do {
+				try await Task.sleep(nanoseconds: UInt64(retryInterval * 1_000_000_000))
+			} catch {
+				//	if Task.sleep fails for whatever impossible reason,
+				//	then return our last NetworkError instance
+				throw err
+			}
 		}
 
 		return try await execute(newRequest, retryInterval: retryInterval)

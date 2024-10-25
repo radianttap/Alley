@@ -11,7 +11,7 @@ import Foundation
 /**
 Declaration of errors that Alley can throw/return.
 
-Since this is all about networking, it should pass-through any URLErrors that happen but also add its own
+Since this is all about networking, it should pass-through any `URLError`s that happen but also add its own
 */
 public enum NetworkError: Error {
 	///	When network conditions are so bad that after `maxRetries` the request did not succeed.
