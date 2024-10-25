@@ -27,7 +27,7 @@ Second point is nice to have. First one is vastly more important since that data
 
 Just drag `Alley` folder into your project.
 
-Of just add this repo URL as Package. 
+Or just add this repo’s URL through Swift Package Manager.
 
 - Version 2.x supports old school stuff with completion handlers.
 - Version 3.x is pure `async`/`await`.
