@@ -2,7 +2,7 @@
 [![](https://img.shields.io/github/license/radianttap/Alley.svg)](https://github.com/radianttap/Alley/blob/master/LICENSE)
 ![](https://img.shields.io/badge/swift-6.0-223344.svg?logo=swift&labelColor=FA7343&logoColor=white)
 \
-![platforms: iOS|tvOS|watchOS|macOS|visionOS](https://img.shields.io/badge/platform-iOS_15|tvOS_15|watchOS_10|macOS_12|visionOS_1-blue.svg)
+![platforms: iOS|tvOS|watchOS|macOS|visionOS](https://img.shields.io/badge/platform-iOS_15_·_tvOS_15_·_watchOS_10_·_macOS_12_·_visionOS_1-blue.svg)
 
 # Alley
 
