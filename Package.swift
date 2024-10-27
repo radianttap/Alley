@@ -20,10 +20,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Alley",
-			swiftSettings: [
-				.enableExperimentalFeature("StrictConcurrency")
-			]
+            name: "Alley"
 		)
 	],
 	swiftLanguageModes: [.v6]
