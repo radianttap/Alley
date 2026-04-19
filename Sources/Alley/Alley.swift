@@ -18,15 +18,17 @@ extension URLSession {
 	///   - urlRequest: `URLRequest` instance to execute.
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by `URLSession`. Default is `false`.
+	///   - retryNonIdempotent: If `true`, retry even when the HTTP method is not idempotent (e.g. `POST`, `PATCH`). Default is `false` to avoid accidentally submitting the same payload twice. Only enable when the server-side operation is safe to repeat.
 	/// - Parameter retryInterval: Base delay (seconds) used for exponential backoff between retries. Actual wait is `retryInterval * 2^(attempt-1)`, capped at 30s, with full random jitter in `[0, cap]`. Pass `0` to retry immediately.
-	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false) async throws(NetworkError) -> Data {
+	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false, retryNonIdempotent: Bool = false) async throws(NetworkError) -> Data {
 		let networkRequest = RetriableRequest(
 			urlRequest,
 			1,
 			maxRetries,
-			allowEmptyData
+			allowEmptyData,
+			retryNonIdempotent
 		)
-		
+
 		return try await execute(networkRequest, retryInterval: retryInterval)
 	}
 }
@@ -38,7 +40,8 @@ private extension URLSession {
 		urlRequest: URLRequest,
 		currentRetries: Int,
 		maxRetries: Int,
-		allowEmptyData: Bool
+		allowEmptyData: Bool,
+		retryNonIdempotent: Bool
 	)
 
 	///
@@ -83,6 +86,13 @@ private extension URLSession {
 			throw err
 		}
 
+		//	Refuse to retry non-idempotent methods by default: replaying a POST/PATCH
+		//	after networkConnectionLost can double-submit orders, payments, messages, etc.
+		//	The original request may have reached the server even though we didn't see the response.
+		if !networkRequest.retryNonIdempotent, !isIdempotent(networkRequest.urlRequest.httpMethod) {
+			throw err
+		}
+
 		//	update retries count
 		var newRequest = networkRequest
 		newRequest.currentRetries += 1
@@ -106,6 +116,18 @@ private extension URLSession {
 		}
 
 		return try await execute(newRequest, retryInterval: retryInterval)
+	}
+
+	///	RFC 7231 §4.2.2: `GET`, `HEAD`, `OPTIONS`, `TRACE`, `PUT`, `DELETE` are idempotent.
+	///	A missing method defaults to `GET`.
+	func isIdempotent(_ method: String?) -> Bool {
+		guard let method else { return true }
+		switch method.uppercased() {
+			case "GET", "HEAD", "OPTIONS", "TRACE", "PUT", "DELETE":
+				return true
+			default:
+				return false
+		}
 	}
 
 	///	Returns the delay requested by the server via the `Retry-After` response header,
