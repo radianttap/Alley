@@ -13,7 +13,7 @@ Declaration of errors that Alley can throw/return.
 
 Since this is all about networking, it should pass-through any `URLError`s that happen but also add its own
 */
-public enum NetworkError: Error {
+public enum NetworkError: Error, Sendable {
 	///	When network conditions are so bad that after `maxRetries` the request did not succeed.
 	case inaccessible
 
@@ -22,9 +22,9 @@ public enum NetworkError: Error {
 
 	///	`URLSession` errors are passed-through, handle as appropriate.
 	case urlError(URLError)
-	
-	///	URLSession returned an `Error` object which is not `URLError`
-	case generalError(Swift.Error)
+
+	///	URLSession returned an `Error` object which is not `URLError`. Constrained to `Sendable` so the whole enum can cross actor boundaries; non-`Sendable` errors must be wrapped before storing here.
+	case generalError(any Error & Sendable)
 	
 	///	When `URLResponse` is not `HTTPURLResponse`.
 	case invalidResponseType(URLResponse)
