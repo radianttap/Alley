@@ -18,6 +18,7 @@ extension URLSession {
 	///   - urlRequest: `URLRequest` instance to execute.
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by `URLSession`. Default is `false`.
+	/// - Parameter retryInterval: Base delay (seconds) used for exponential backoff between retries. Actual wait is `retryInterval * 2^(attempt-1)`, capped at 30s, with full random jitter in `[0, cap]`. Pass `0` to retry immediately.
 	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false) async throws(NetworkError) -> Data {
 		let networkRequest = RetriableRequest(
 			urlRequest,
@@ -91,8 +92,9 @@ private extension URLSession {
 		}
 		
 		if retryInterval > 0 {
+			let delay = backoffDelay(base: retryInterval, attempt: newRequest.currentRetries)
 			do {
-				try await Task.sleep(nanoseconds: UInt64(retryInterval * 1_000_000_000))
+				try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
 			} catch {
 				//	if Task.sleep fails for whatever impossible reason,
 				//	then return our last NetworkError instance
@@ -101,5 +103,18 @@ private extension URLSession {
 		}
 
 		return try await execute(newRequest, retryInterval: retryInterval)
+	}
+
+	///	Full-jitter exponential backoff (AWS Architecture Blog).
+	///
+	///	Returns a uniformly random delay in `[0, min(cap, base * 2^(attempt-2))]`, so the first
+	///	retry waits up to `base`, the second up to `2 * base`, etc., capped at 30 seconds.
+	///	Jitter spreads concurrent retriers to prevent synchronized thundering herds against the server.
+	func backoffDelay(base: TimeInterval, attempt: Int) -> TimeInterval {
+		let cap: TimeInterval = 30
+		let exponent = max(0, attempt - 2)
+		let ceiling = min(cap, base * pow(2.0, Double(exponent)))
+		guard ceiling > 0 else { return 0 }
+		return TimeInterval.random(in: 0...ceiling)
 	}
 }
