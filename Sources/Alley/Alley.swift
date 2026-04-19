@@ -7,6 +7,13 @@
 //
 
 import Foundation
+import OSLog
+
+///	Shared logger for Alley's retry decisions. Messages are emitted at `.debug` (per-attempt)
+///	and `.error` (final give-up), off by default in Console / Instruments. Enable at runtime with
+///	`log config --mode level:debug --subsystem Alley` or filter by subsystem `Alley` in Console.app.
+@available(macOS 12, iOS 15, watchOS 10.0, tvOS 15, visionOS 1, *)
+private let alleyLog = Logger(subsystem: "Alley", category: "retries")
 
 @available(macOS 12, iOS 15, watchOS 10.0, tvOS 15, visionOS 1, *)
 extension URLSession {
@@ -179,6 +186,8 @@ private extension URLSession {
 		retryInterval: TimeInterval,
 		transport: (URLRequest) async throws -> (Payload, URLResponse)
 	) async throws(NetworkError) -> (Payload, HTTPURLResponse) {
+		let url = networkRequest.urlRequest.url?.absoluteString ?? "?"
+
 		guard err.shouldRetry else {
 			throw err
 		}
@@ -187,6 +196,7 @@ private extension URLSession {
 		//	after networkConnectionLost can double-submit orders, payments, messages, etc.
 		//	The original request may have reached the server even though we didn't see the response.
 		if !networkRequest.retryNonIdempotent, !isIdempotent(networkRequest.urlRequest.httpMethod) {
+			alleyLog.debug("Not retrying non-idempotent \(networkRequest.urlRequest.httpMethod ?? "GET", privacy: .public) to \(url, privacy: .public)")
 			throw err
 		}
 
@@ -195,6 +205,7 @@ private extension URLSession {
 		newRequest.currentRetries += 1
 
 		if newRequest.currentRetries >= newRequest.maxRetries {
+			alleyLog.error("Giving up after \(networkRequest.maxRetries, privacy: .public) retries for \(url, privacy: .public): \(String(describing: err), privacy: .public)")
 			throw NetworkError.inaccessible
 		}
 
@@ -202,6 +213,9 @@ private extension URLSession {
 		//	it represents the server's own recovery estimate and should be honored.
 		let delay = retryAfterDelay(for: err)
 			?? (retryInterval > 0 ? backoffDelay(base: retryInterval, attempt: newRequest.currentRetries) : 0)
+
+		alleyLog.debug("Retry \(newRequest.currentRetries, privacy: .public)/\(newRequest.maxRetries, privacy: .public) in \(delay, privacy: .public)s for \(url, privacy: .public) (reason: \(String(describing: err), privacy: .public))")
+
 		if delay > 0 {
 			do {
 				try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
