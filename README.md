@@ -27,7 +27,7 @@ Or just add this repo’s URL through Swift Package Manager.
 
 - Version 2.x supports old school stuff with completion handlers.
 - Version 3.x is pure `async`/`await`.
-- Version 4.x runs in Swift 6 language mode with strict concurrency. Adds exponential backoff with jitter, `Retry-After` support, 429 retries, an idempotency guard, `Task` cancellation propagation, and `Sendable` conformance on `NetworkError`.
+- Version 4.x runs in Swift 6 language mode with strict concurrency. Adds exponential backoff with jitter, `Retry-After` support, 429 retries, an idempotency guard, `Task` cancellation propagation, `Sendable` conformance on `NetworkError`, download/upload/streaming variants, per-request `URLSessionTaskDelegate`, and OSLog logging.
 
 ## Usage
 
@@ -162,6 +162,64 @@ let data = try await urlSession.alleyData(for: urlRequest, retryNonIdempotent: t
 ### Customizing
 
 You can customize the behavior by changing the implementation of `shouldRetry` property (in this case I recommend to manually copy Alley folder into your project).
+
+## Download, upload, and streaming
+
+`alleyData` is the workhorse. The rest of the entry points reuse the same retry engine for other transport shapes.
+
+### `alleyDownload(for:)`
+
+Downloads the response body to a temporary file and returns `(URL, HTTPURLResponse)`. Use this when the response is large enough that buffering into memory is wasteful — video, PDFs, backups. Each retry starts a fresh download (resume data from a failed attempt is not reused).
+
+```swift
+let (fileURL, response) = try await urlSession.alleyDownload(for: urlRequest)
+try FileManager.default.moveItem(at: fileURL, to: destination)
+```
+
+### `alleyUpload(for:from:)`
+
+Uploads a `Data` body and returns the response `Data`. Because uploads are almost always non-idempotent, the idempotency guard is in force by default — opt in with `retryNonIdempotent: true` when your server deduplicates.
+
+```swift
+let response = try await urlSession.alleyUpload(for: urlRequest, from: bodyData)
+```
+
+### `alleyBytes(for:)`
+
+Wraps `URLSession.bytes(for:)` for streaming responses (SSE, NDJSON, long poll, progressive audio/video). **Does not retry** — an `AsyncBytes` stream isn't safe to replay once iteration has started. On an HTTP error status, Alley consumes the small error body and surfaces it through `.endpointError` so you see why the server rejected the stream.
+
+```swift
+let (bytes, response) = try await urlSession.alleyBytes(for: urlRequest)
+for try await line in bytes.lines {
+    // process one event per line
+}
+```
+
+## Metrics, auth, and progress: `URLSessionTaskDelegate`
+
+Every Alley call accepts an optional `URLSessionTaskDelegate`, which `URLSession` attaches for the duration of each task. Use it to gather `URLSessionTaskMetrics`, handle per-task authentication challenges, or observe upload/download progress — without having to switch to a custom `URLSession` configuration.
+
+```swift
+let data = try await urlSession.alleyData(for: urlRequest, delegate: myTelemetryDelegate)
+```
+
+The same delegate is reused across retry attempts, so telemetry callbacks fire once per attempt and can be correlated by `URLSessionTask.taskIdentifier`.
+
+## Logging
+
+Alley emits retry decisions via `OSLog` under the subsystem `Alley`, category `retries`:
+
+- `.debug` on each scheduled retry (attempt number, delay, URL, error reason)
+- `.debug` when a request is refused due to the idempotency guard
+- `.error` when retries are exhausted
+
+These messages are off by default. Enable them for troubleshooting with:
+
+```
+log config --mode level:debug --subsystem Alley
+```
+
+or filter by subsystem `Alley` in Console.app. No API surface is added; callers who want structured telemetry per attempt should use the `delegate:` parameter with `URLSessionTaskMetrics`.
 
 * * *
 
