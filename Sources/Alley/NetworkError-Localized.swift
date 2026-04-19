@@ -29,6 +29,9 @@ extension NetworkError: CustomStringConvertible {
 
 			case .inaccessible:
 				return "Service not accessible"
+
+			case .cancelled:
+				return "Request was cancelled."
 		}
 	}
 }
@@ -53,6 +56,9 @@ extension NetworkError: CustomDebugStringConvertible {
 
 			case .inaccessible:
 				return "Service not accessible"
+
+			case .cancelled:
+				return "Request was cancelled."
 		}
 	}
 }
@@ -78,6 +84,9 @@ extension NetworkError: LocalizedError {
 				
 			case .inaccessible:
 				return NSLocalizedString("Service is not accessible", comment: "")
+
+			case .cancelled:
+				return NSLocalizedString("Request was cancelled", comment: "")
 		}
 	}
 	
@@ -101,6 +110,9 @@ extension NetworkError: LocalizedError {
 			case .endpointError(let httpURLResponse, let data):
 				let s = "\( httpURLResponse.formattedHeaders )\n\n\( data?.utf8StringRepresentation ?? "" )"
 				return s
+
+			case .cancelled:
+				return nil
 		}
 	}
 }

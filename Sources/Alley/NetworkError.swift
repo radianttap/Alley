@@ -16,7 +16,10 @@ Since this is all about networking, it should pass-through any `URLError`s that 
 public enum NetworkError: Error {
 	///	When network conditions are so bad that after `maxRetries` the request did not succeed.
 	case inaccessible
-	
+
+	///	The surrounding `Task` was cancelled (by the caller or via structured concurrency) before the request completed. Retries stop immediately when this happens.
+	case cancelled
+
 	///	`URLSession` errors are passed-through, handle as appropriate.
 	case urlError(URLError)
 	

@@ -47,17 +47,29 @@ private extension URLSession {
 	///
 	func execute(_ networkRequest: RetriableRequest, retryInterval: TimeInterval) async throws(NetworkError) -> Data {
 		let urlRequest = networkRequest.urlRequest
-		
+
+		if Task.isCancelled {
+			throw NetworkError.cancelled
+		}
+
 		do {
 			let (data, urlResponse) = try await data(for: urlRequest)
 			try verify(data, urlResponse, for: networkRequest, retryInterval: retryInterval)
 			return data
-			
+
 		} catch let err as NetworkError {
 			return try await retry(networkRequest, ifPossibleFor: err, retryInterval: retryInterval)
 
 		} catch let err as URLError {
+			//	URLSession surfaces Task cancellation as URLError.cancelled — map it to our
+			//	dedicated case so callers can distinguish intentional cancellation from a transport failure.
+			if err.code == .cancelled {
+				throw NetworkError.cancelled
+			}
 			return try await retry(networkRequest, ifPossibleFor: NetworkError.urlError(err), retryInterval: retryInterval)
+
+		} catch is CancellationError {
+			throw NetworkError.cancelled
 
 		} catch let err {
 			return try await retry(networkRequest, ifPossibleFor: NetworkError.generalError(err), retryInterval: retryInterval)
@@ -109,9 +121,9 @@ private extension URLSession {
 			do {
 				try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
 			} catch {
-				//	if Task.sleep fails for whatever impossible reason,
-				//	then return our last NetworkError instance
-				throw err
+				//	Task.sleep only throws on cancellation; propagate that rather than
+				//	masking it with the last network error so callers see the real reason we stopped.
+				throw NetworkError.cancelled
 			}
 		}
 
