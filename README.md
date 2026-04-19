@@ -28,6 +28,7 @@ Or just add this repo’s URL through Swift Package Manager.
 - Version 2.x supports old school stuff with completion handlers.
 - Version 3.x is pure `async`/`await`.
 - Version 4.x has strict concurrency checking turned ON and Swift 6 language mode.
+- Version 5.x adds exponential backoff with jitter, `Retry-After` support, 429 retries, an idempotency guard, `Task` cancellation propagation, and `Sendable` conformance on `NetworkError`.
 
 ## Usage
 
@@ -67,9 +68,12 @@ This is custom Error (implemented by an enum) which – for starters – wraps s
 ///	`URLSession` errors are passed-through, handle as appropriate.
 case urlError(URLError)
 
-///	URLSession returned an `Error` object which is not `URLError`
-case generalError(Swift.Error)
+///	URLSession returned an `Error` object which is not `URLError`.
+///	Constrained to `Sendable` so the whole enum can cross actor boundaries.
+case generalError(any Error & Sendable)
 ```
+
+If you need to wrap a non-`Sendable` error, convert it to a value type (or a `Sendable` wrapper) before constructing `.generalError`.
 
 Next, if the returned `URLResponse` is not `HTTPURLResponse`:
 
@@ -101,7 +105,14 @@ let data = try await urlSession.alleyData(for: urlRequest, allowEmptyData: true)
 
 where you will get empty `Data()`.
 
-There’s one more possible `NetworkError` value, which is related to...
+There are two more possible `NetworkError` values. `.inaccessible` is covered in the next section. The other is:
+
+```swift
+///	The surrounding `Task` was cancelled before the request completed.
+case cancelled
+```
+
+If the enclosing `Task` is cancelled – by the caller, by structured concurrency, or during the backoff sleep – Alley stops retrying immediately and throws `.cancelled`. `URLError.cancelled` (which `URLSession` throws on task cancellation) is mapped to the same case, so you don't need to special-case it. Use this to skip error UI when the user simply navigated away.
 
 ## Automatic retries
 
@@ -115,17 +126,41 @@ let urlRequest = URLRequest(...)
 let data = try await urlSession.alleyData(for: urlRequest, maxRetries: 5)
 ```
 
-How automatic retries work? 
+How automatic retries work?
 
 In case of a `NetworkError` being raised, _Alley_ will check its `shouldRetry` property and – if `true` – it will increment retry counter by 1 and perform `URLSessionDataTask` again. And again. And again...until it reaches `maxRetries` value when it will return `NetworkError.inaccessible` as result.
 
-Each retry is delayed by half a second but you can supply any value you want (including `0`) in the call to `alleyData`, argument `retryInterval`.
+The retryable set covers the usual transient conditions: `URLError.timedOut`, `.cannotFindHost`, `.cannotConnectToHost`, `.networkConnectionLost`, `.dnsLookupFailed`, `.notConnectedToInternet`, and HTTP `408`, `429`, `444`, `503`, `504`, `599`.
+
+### Backoff and jitter
+
+`retryInterval` (default `0.5` seconds) is the **base delay** for exponential backoff. The actual wait before the Nth retry is a random value in `[0, min(30s, base × 2^(N-1))]` – full jitter, capped at 30 seconds. Jitter is important: without it, many clients retrying at the same moment synchronize into a thundering herd against a recovering server.
 
 ```swift
 let urlRequest = URLRequest(...)
 
 let data = try await urlSession.alleyData(for: urlRequest, retryInterval: 0.3)
 ```
+
+Pass `0` to retry immediately with no delay.
+
+### Retry-After
+
+If the server returns a `Retry-After` response header (per RFC 7231 – common on `429` and `503`), Alley honors it: the header value (either an integer number of seconds or an HTTP-date) replaces the computed backoff for that attempt. This prevents hammering a server that has explicitly told you how long to wait.
+
+### Idempotency guard
+
+By default, Alley **does not retry non-idempotent HTTP methods** (`POST`, `PATCH`, etc.). Replaying a `POST` after `networkConnectionLost` is a silent footgun: the original request may have reached the server and only the response was lost, which would cause a retry to double-submit.
+
+Only `GET`, `HEAD`, `OPTIONS`, `TRACE`, `PUT`, and `DELETE` (RFC 7231 §4.2.2) are retried automatically. If you know a specific `POST` is safe to replay – for example, because your server supports an `Idempotency-Key` header – opt in per call:
+
+```swift
+let urlRequest = URLRequest(...) // POST with Idempotency-Key set
+
+let data = try await urlSession.alleyData(for: urlRequest, retryNonIdempotent: true)
+```
+
+### Customizing
 
 You can customize the behavior by changing the implementation of `shouldRetry` property (in this case I recommend to manually copy Alley folder into your project).
 
