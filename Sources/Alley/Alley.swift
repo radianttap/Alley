@@ -91,8 +91,11 @@ private extension URLSession {
 			throw NetworkError.inaccessible
 		}
 		
-		if retryInterval > 0 {
-			let delay = backoffDelay(base: retryInterval, attempt: newRequest.currentRetries)
+		//	Server-specified Retry-After overrides our backoff when present;
+		//	it represents the server's own recovery estimate and should be honored.
+		let delay = retryAfterDelay(for: err)
+			?? (retryInterval > 0 ? backoffDelay(base: retryInterval, attempt: newRequest.currentRetries) : 0)
+		if delay > 0 {
 			do {
 				try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
 			} catch {
@@ -103,6 +106,29 @@ private extension URLSession {
 		}
 
 		return try await execute(newRequest, retryInterval: retryInterval)
+	}
+
+	///	Returns the delay requested by the server via the `Retry-After` response header,
+	///	or `nil` if the error isn't an endpoint error or the header is absent/unparseable.
+	///
+	///	Per RFC 7231, `Retry-After` is either a non-negative integer number of seconds or an HTTP-date.
+	///	Common on `429 Too Many Requests` and `503 Service Unavailable`.
+	func retryAfterDelay(for err: NetworkError) -> TimeInterval? {
+		guard case .endpointError(let response, _) = err else { return nil }
+		guard let raw = response.value(forHTTPHeaderField: "Retry-After")?.trimmingCharacters(in: .whitespaces), !raw.isEmpty else {
+			return nil
+		}
+		if let seconds = TimeInterval(raw), seconds >= 0 {
+			return seconds
+		}
+		let formatter = DateFormatter()
+		formatter.locale = Locale(identifier: "en_US_POSIX")
+		formatter.timeZone = TimeZone(identifier: "GMT")
+		formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+		if let date = formatter.date(from: raw) {
+			return max(0, date.timeIntervalSinceNow)
+		}
+		return nil
 	}
 
 	///	Full-jitter exponential backoff (AWS Architecture Blog).
