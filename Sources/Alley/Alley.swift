@@ -19,11 +19,12 @@ extension URLSession {
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - allowEmptyData: Should empty response `Data` be treated as failure (this is default) even if no other errors are returned by `URLSession`. Default is `false`.
 	///   - retryNonIdempotent: If `true`, retry even when the HTTP method is not idempotent (e.g. `POST`, `PATCH`). Default is `false` to avoid accidentally submitting the same payload twice. Only enable when the server-side operation is safe to repeat.
+	///   - delegate: Optional `URLSessionTaskDelegate` invoked for each attempt. Use this to observe metrics, handle per-task auth challenges, or track progress without switching to a custom `URLSession`. The same delegate is reused across retries.
 	/// - Parameter retryInterval: Base delay (seconds) used for exponential backoff between retries. Actual wait is `retryInterval * 2^(attempt-1)`, capped at 30s, with full random jitter in `[0, cap]`. Pass `0` to retry immediately.
-	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false, retryNonIdempotent: Bool = false) async throws(NetworkError) -> Data {
+	public func alleyData(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false, retryNonIdempotent: Bool = false, delegate: (any URLSessionTaskDelegate)? = nil) async throws(NetworkError) -> Data {
 		let networkRequest = RetriableRequest(urlRequest, 1, maxRetries, retryNonIdempotent)
 		let (data, httpURLResponse) = try await execute(networkRequest, retryInterval: retryInterval) { urlRequest in
-			try await self.data(for: urlRequest)
+			try await self.data(for: urlRequest, delegate: delegate)
 		}
 		if data.isEmpty, !allowEmptyData {
 			throw NetworkError.noResponseData(httpURLResponse)
@@ -41,10 +42,11 @@ extension URLSession {
 	///   - maxRetries: Number of automatic retries (default is 10).
 	///   - retryInterval: Base delay (seconds) used for exponential backoff between retries.
 	///   - retryNonIdempotent: See `alleyData(for:...)`.
-	public func alleyDownload(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, retryNonIdempotent: Bool = false) async throws(NetworkError) -> (URL, HTTPURLResponse) {
+	///   - delegate: See `alleyData(for:...)`.
+	public func alleyDownload(for urlRequest: URLRequest, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, retryNonIdempotent: Bool = false, delegate: (any URLSessionTaskDelegate)? = nil) async throws(NetworkError) -> (URL, HTTPURLResponse) {
 		let networkRequest = RetriableRequest(urlRequest, 1, maxRetries, retryNonIdempotent)
 		return try await execute(networkRequest, retryInterval: retryInterval) { urlRequest in
-			try await self.download(for: urlRequest)
+			try await self.download(for: urlRequest, delegate: delegate)
 		}
 	}
 
@@ -59,10 +61,11 @@ extension URLSession {
 	///   - retryInterval: Base delay (seconds) used for exponential backoff between retries.
 	///   - allowEmptyData: See `alleyData(for:...)`.
 	///   - retryNonIdempotent: See `alleyData(for:...)`.
-	public func alleyUpload(for urlRequest: URLRequest, from bodyData: Data, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false, retryNonIdempotent: Bool = false) async throws(NetworkError) -> Data {
+	///   - delegate: See `alleyData(for:...)`.
+	public func alleyUpload(for urlRequest: URLRequest, from bodyData: Data, maxRetries: Int = 10, retryInterval: TimeInterval = 0.5, allowEmptyData: Bool = false, retryNonIdempotent: Bool = false, delegate: (any URLSessionTaskDelegate)? = nil) async throws(NetworkError) -> Data {
 		let networkRequest = RetriableRequest(urlRequest, 1, maxRetries, retryNonIdempotent)
 		let (data, httpURLResponse) = try await execute(networkRequest, retryInterval: retryInterval) { urlRequest in
-			try await self.upload(for: urlRequest, from: bodyData)
+			try await self.upload(for: urlRequest, from: bodyData, delegate: delegate)
 		}
 		if data.isEmpty, !allowEmptyData {
 			throw NetworkError.noResponseData(httpURLResponse)
@@ -74,15 +77,17 @@ extension URLSession {
 	///
 	///	Unlike `alleyData`, this method does **not** retry: the `AsyncBytes` stream becomes invalid once iteration begins, so there is nothing safe to replay. If the endpoint responds with status `>= 400`, Alley consumes the body into `Data` so it can be surfaced via `NetworkError.endpointError` — error bodies are typically small, and callers usually want to see them.
 	///
-	/// - Parameter urlRequest: `URLRequest` instance to execute.
+	/// - Parameters:
+	///   - urlRequest: `URLRequest` instance to execute.
+	///   - delegate: Optional `URLSessionTaskDelegate` for metrics, auth challenges, or progress observation. See `alleyData(for:...)`.
 	/// - Returns: The `AsyncBytes` stream and the `HTTPURLResponse` whose status code is in `2xx`/`3xx` range.
-	public func alleyBytes(for urlRequest: URLRequest) async throws(NetworkError) -> (URLSession.AsyncBytes, HTTPURLResponse) {
+	public func alleyBytes(for urlRequest: URLRequest, delegate: (any URLSessionTaskDelegate)? = nil) async throws(NetworkError) -> (URLSession.AsyncBytes, HTTPURLResponse) {
 		if Task.isCancelled {
 			throw NetworkError.cancelled
 		}
 
 		do {
-			let (bytes, urlResponse) = try await self.bytes(for: urlRequest)
+			let (bytes, urlResponse) = try await self.bytes(for: urlRequest, delegate: delegate)
 			guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
 				throw NetworkError.invalidResponseType(urlResponse)
 			}
