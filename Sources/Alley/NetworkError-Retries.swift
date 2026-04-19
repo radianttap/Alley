@@ -35,6 +35,7 @@ public extension NetworkError {
 			case .endpointError(let httpURLResponse, _):
 				switch httpURLResponse.statusCode {
 					case 408,	// Request Timeout
+						429,	// Too Many Requests
 						444,	// Connection Closed Without Response
 						503,	// Service Unavailable
 						504,	// Gateway Timeout
