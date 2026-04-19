@@ -69,6 +69,52 @@ extension URLSession {
 		}
 		return data
 	}
+
+	///	Starts a streaming request and returns a byte stream the caller can iterate (for SSE, NDJSON, audio, or any response where buffering the full body is undesirable).
+	///
+	///	Unlike `alleyData`, this method does **not** retry: the `AsyncBytes` stream becomes invalid once iteration begins, so there is nothing safe to replay. If the endpoint responds with status `>= 400`, Alley consumes the body into `Data` so it can be surfaced via `NetworkError.endpointError` — error bodies are typically small, and callers usually want to see them.
+	///
+	/// - Parameter urlRequest: `URLRequest` instance to execute.
+	/// - Returns: The `AsyncBytes` stream and the `HTTPURLResponse` whose status code is in `2xx`/`3xx` range.
+	public func alleyBytes(for urlRequest: URLRequest) async throws(NetworkError) -> (URLSession.AsyncBytes, HTTPURLResponse) {
+		if Task.isCancelled {
+			throw NetworkError.cancelled
+		}
+
+		do {
+			let (bytes, urlResponse) = try await self.bytes(for: urlRequest)
+			guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
+				throw NetworkError.invalidResponseType(urlResponse)
+			}
+			if httpURLResponse.statusCode >= 400 {
+				var body = Data()
+				do {
+					for try await byte in bytes {
+						body.append(byte)
+					}
+				} catch {
+					//	Partial body is still useful; the status code already tells us the request failed.
+				}
+				throw NetworkError.endpointError(httpURLResponse, body.isEmpty ? nil : body)
+			}
+			return (bytes, httpURLResponse)
+
+		} catch let err as NetworkError {
+			throw err
+
+		} catch let err as URLError {
+			if err.code == .cancelled {
+				throw NetworkError.cancelled
+			}
+			throw NetworkError.urlError(err)
+
+		} catch is CancellationError {
+			throw NetworkError.cancelled
+
+		} catch let err {
+			throw NetworkError.generalError(err)
+		}
+	}
 }
 
 @available(macOS 12, iOS 15, watchOS 10.0, tvOS 15, visionOS 1, *)
