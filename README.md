@@ -27,8 +27,7 @@ Or just add this repo’s URL through Swift Package Manager.
 
 - Version 2.x supports old school stuff with completion handlers.
 - Version 3.x is pure `async`/`await`.
-- Version 4.x has strict concurrency checking turned ON and Swift 6 language mode.
-- Version 5.x adds exponential backoff with jitter, `Retry-After` support, 429 retries, an idempotency guard, `Task` cancellation propagation, and `Sendable` conformance on `NetworkError`.
+- Version 4.x runs in Swift 6 language mode with strict concurrency. Adds exponential backoff with jitter, `Retry-After` support, 429 retries, an idempotency guard, `Task` cancellation propagation, and `Sendable` conformance on `NetworkError`.
 
 ## Usage
 
